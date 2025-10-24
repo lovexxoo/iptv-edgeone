@@ -198,9 +198,12 @@ function getPathname(code: string): string {
   // 深圳台pathname生成算法 - 从Perl CGI移植
   
   // 获取今天0点的时间戳(毫秒)
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const timestampStr = today.getTime().toString();
+  // 获取CST时区(UTC+8)今天0点的时间戳(毫秒)
+  const now = new Date();
+  const cstOffset = 8 * 60 * 60 * 1000;
+  const cstNow = new Date(now.getTime() + cstOffset);
+  cstNow.setUTCHours(0, 0, 0, 0);
+  const timestampStr = (cstNow.getTime() - cstOffset).toString();
   
   // 计算r和l
   let r = 0;

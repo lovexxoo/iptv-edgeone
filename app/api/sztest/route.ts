@@ -16,9 +16,12 @@ export async function GET(request: NextRequest) {
   const nowMs = today.getTime();
   const nowIso = today.toISOString();
   
-  today.setHours(0, 0, 0, 0);
-  const todayMs = today.getTime();
-  const todayIso = today.toISOString();
+  // 使用CST时区(UTC+8)
+  const cstOffset = 8 * 60 * 60 * 1000;
+  const cstToday = new Date(today.getTime() + cstOffset);
+  cstToday.setUTCHours(0, 0, 0, 0);
+  const todayMs = cstToday.getTime() - cstOffset;
+  const todayIso = cstToday.toISOString();
   const timestampStr = todayMs.toString();
   
   // 计算r和l
