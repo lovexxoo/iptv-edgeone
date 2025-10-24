@@ -46,7 +46,9 @@ function getPathname(code: string): string {
   const timestampStr = today.getTime().toString() + '000';
   
   const bigIntValue = BigInt(timestampStr);
-  const result = (bigIntValue / 86400000n) % 10000n;
+  const divisor = BigInt(86400000);
+  const modulo = BigInt(10000);
+  const result = (bigIntValue / divisor) % modulo;
   
   return `${code}_${result}`;
 }

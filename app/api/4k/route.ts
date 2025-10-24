@@ -191,7 +191,12 @@ async function makeSign(url: string, params: string, timeMillis: number, key: st
   );
 
   // Base64 encode
-  const base64 = btoa(String.fromCharCode(...new Uint8Array(encrypted)));
+  const bytes = new Uint8Array(encrypted);
+  let binary = '';
+  for (let i = 0; i < bytes.length; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  const base64 = btoa(binary);
   return base64.replace(/[\r\n]/g, '');
 }
 
