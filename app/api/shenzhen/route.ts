@@ -83,7 +83,9 @@ function md5(text: string): string {
   function convertToWordArray(text: string): number[] {
     const wordArray: number[] = [];
     for (let i = 0; i < text.length * 8; i += 8) {
-      wordArray[i >> 5] |= (text.charCodeAt(i / 8) & 0xFF) << (i % 32);
+      const idx = i >> 5;
+      if (wordArray[idx] === undefined) wordArray[idx] = 0;
+      wordArray[idx] |= (text.charCodeAt(i / 8) & 0xFF) << (i % 32);
     }
     return wordArray;
   }
@@ -100,8 +102,12 @@ function md5(text: string): string {
   // 准备消息
   const msgLength = text.length;
   const wordArray = convertToWordArray(text);
-  wordArray[msgLength >> 5] |= 0x80 << ((msgLength % 32));
-  wordArray[(((msgLength + 64) >>> 9) << 4) + 14] = msgLength * 8;
+  const paddingIdx = msgLength >> 5;
+  if (wordArray[paddingIdx] === undefined) wordArray[paddingIdx] = 0;
+  wordArray[paddingIdx] |= 0x80 << ((msgLength % 32));
+  const lengthIdx = (((msgLength + 64) >>> 9) << 4) + 14;
+  if (wordArray[lengthIdx] === undefined) wordArray[lengthIdx] = 0;
+  wordArray[lengthIdx] = msgLength * 8;
 
   // MD5常量
   let a = 0x67452301;

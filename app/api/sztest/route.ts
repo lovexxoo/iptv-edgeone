@@ -74,7 +74,9 @@ export async function GET(request: NextRequest) {
       l: -37,
       s: 'hr',
       pathname: 'l3rhasb'
-    }
+  ,
+      testMd5: "test",
+  }
   };
   
   return NextResponse.json(result, {
