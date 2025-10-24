@@ -1,0 +1,111 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { CHANNEL_MAP, API_BASE, STREAM_BASE, DEFAULT_HEADERS } from '../config';
+
+export const runtime = 'edge';
+
+interface StreamInfo {
+  url: string;
+  string: string;
+  time: number;
+}
+
+// 获取M3U8播放列表
+async function getM3U8Playlist(channelId: string, host: string, pathname: string): Promise<Response> {
+  const channelName = CHANNEL_MAP[channelId];
+  
+  if (!channelName) {
+    return new NextResponse('Invalid channel ID', { status: 400 });
+  }
+
+  try {
+    // 1. 获取流信息
+    const apiUrl = `${API_BASE}/index/jmd/getRq?name=${channelName}`;
+    const apiResponse = await fetch(apiUrl, {
+      headers: DEFAULT_HEADERS,
+    });
+
+    if (!apiResponse.ok) {
+      return new NextResponse('Failed to fetch stream info', { status: 502 });
+    }
+
+    const streamInfo: StreamInfo = await apiResponse.json();
+    
+    // 2. 获取M3U8播放列表
+    const m3u8Url = `${STREAM_BASE}${streamInfo.url}?wsSecret=${streamInfo.string}&wsTime=${streamInfo.time}`;
+    const m3u8Response = await fetch(m3u8Url, {
+      headers: {
+        'User-Agent': DEFAULT_HEADERS['User-Agent'],
+        'Referer': DEFAULT_HEADERS['Referer'],
+      },
+    });
+
+    if (!m3u8Response.ok) {
+      return new NextResponse('Failed to fetch M3U8', { status: 502 });
+    }
+
+    let m3u8Content = await m3u8Response.text();
+
+    // 3. 替换TS文件路径为代理路径
+    const tsBaseUrl = `${STREAM_BASE}/live/${channelName}/`;
+    const proxyBaseUrl = `http://${host}${pathname}?ts=`;
+    
+    m3u8Content = m3u8Content.replace(
+      /([^\s]+\.ts)/gi,
+      (match) => `${proxyBaseUrl}${encodeURIComponent(tsBaseUrl + match)}`
+    );
+
+    return new NextResponse(m3u8Content, {
+      headers: {
+        'Content-Type': 'application/vnd.apple.mpegurl',
+        'Cache-Control': 'no-cache',
+      },
+    });
+  } catch (error) {
+    console.error('Error:', error);
+    return new NextResponse('Internal server error', { status: 500 });
+  }
+}
+
+// 代理TS文件
+async function proxyTSFile(tsUrl: string): Promise<Response> {
+  try {
+    const response = await fetch(tsUrl, {
+      headers: {
+        'User-Agent': DEFAULT_HEADERS['User-Agent'],
+        'Referer': DEFAULT_HEADERS['Referer'],
+      },
+    });
+
+    if (!response.ok) {
+      return new NextResponse('Failed to fetch TS file', { status: 502 });
+    }
+
+    // 直接返回TS文件流
+    return new NextResponse(response.body, {
+      headers: {
+        'Content-Type': 'video/MP2T',
+        'Cache-Control': 'public, max-age=300',
+      },
+    });
+  } catch (error) {
+    console.error('Error proxying TS:', error);
+    return new NextResponse('Failed to proxy TS file', { status: 500 });
+  }
+}
+
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const channelId = searchParams.get('id') || 'ynws';
+  const tsUrl = searchParams.get('ts');
+
+  const host = request.headers.get('host') || '';
+  const pathname = new URL(request.url).pathname;
+
+  // 如果有ts参数,代理TS文件
+  if (tsUrl) {
+    return proxyTSFile(decodeURIComponent(tsUrl));
+  }
+
+  // 否则返回M3U8播放列表
+  return getM3U8Playlist(channelId, host, pathname);
+}
