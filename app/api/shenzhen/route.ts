@@ -61,9 +61,9 @@ export async function GET(request: NextRequest) {
     let m3u8Content = '#EXTM3U\n';
     
     // 构建正确的baseUrl
-    const protocol = request.headers.get('x-forwarded-proto') || 'https';
-    const host = request.headers.get('x-forwarded-host') || request.headers.get('host') || 'localhost:3000';
-    const baseUrl = `${protocol}://${host}/api/shenzhen`;
+    // 从request.url中解析出完整的baseUrl
+    const url = new URL(request.url);
+    const baseUrl = `${url.protocol}//${url.host}/api/shenzhen`;
     
     for (const [cid, _] of Object.entries(CHANNEL_MAP)) {
       m3u8Content += `#EXTINF:-1,${CHANNEL_NAMES[cid]}\n${baseUrl}?id=${cid}\n`;

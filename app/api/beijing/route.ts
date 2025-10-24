@@ -276,9 +276,9 @@ export async function GET(request: NextRequest) {
     
     // 构建正确的baseUrl
     // 优先使用x-forwarded-host(EdgeOne会设置为用户访问的域名)
-    const protocol = request.headers.get('x-forwarded-proto') || 'https';
-    const host = request.headers.get('x-forwarded-host') || request.headers.get('host') || 'localhost:3000';
-    const baseUrl = `${protocol}://${host}/api/beijing`;
+    // 从request.url中解析出完整的baseUrl
+    const url = new URL(request.url);
+    const baseUrl = `${url.protocol}//${url.host}/api/beijing`;
 
     for (const [cid, _] of Object.entries(CHANNEL_MAP)) {
       const channelName = CHANNEL_NAMES[cid];

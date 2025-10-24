@@ -230,14 +230,13 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const id = searchParams.get('id') || 'btv4k';
 
-  // 如果是list请求，返回频道列表
+    // 如果是list请求，返回频道列表
   if (id === 'list') {
     let m3u8Content = '#EXTM3U\n';
     
-    // 构建正确的baseUrl
-    const protocol = request.headers.get('x-forwarded-proto') || 'https';
-    const host = request.headers.get('x-forwarded-host') || request.headers.get('host') || 'localhost:3000';
-    const baseUrl = `${protocol}://${host}/api/4k`;
+    // 从request.url中解析出完整的baseUrl
+    const url = new URL(request.url);
+    const baseUrl = `${url.protocol}//${url.host}/api/4k`;
 
     for (const [cid, _] of Object.entries(CHANNEL_MAP)) {
       const channelName = CHANNEL_NAMES[cid];
