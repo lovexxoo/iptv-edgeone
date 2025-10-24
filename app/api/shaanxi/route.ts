@@ -30,14 +30,33 @@ async function getStreamUrl(id: string, isRadio: boolean): Promise<string | null
     const response = await fetch(url);
     if (!response.ok) return null;
 
-    const data = await response.json();
-    if (!data?.result?.list) return null;
-
-    for (const item of data.result.list) {
-      if (item.id?.toString() === id) {
-        return item.livestreamurl || null;
-      }
+    const text = await response.text();
+    
+    // 使用正则直接搜索(避免完整JSON解析)
+    const fieldName = isRadio ? 'radioUrlForandroid' : 'onlineUrlForandroid';
+    const pattern = new RegExp(`"id"\\s*:\\s*${id}\\b[^}]*"${fieldName}"\\s*:\\s*"([^"]+)"`, 's');
+    const match = pattern.exec(text);
+    
+    if (match) {
+      // 处理反斜杠转义
+      return match[1].replace(/\\\//g, '/');
     }
+
+    // 如果正则失败,尝试JSON解析作为后备
+    try {
+      const data = JSON.parse(text);
+      if (data.code !== 101 || !data.data) return null;
+
+      const list = isRadio ? (data.data.radio || data.data) : data.data;
+      if (!Array.isArray(list)) return null;
+
+      for (const item of list) {
+        if (String(item.id) === String(id)) {
+          const url = isRadio ? item.radioUrlForandroid : item.onlineUrlForandroid;
+          return url ? url.replace(/\\\//g, '/') : null;
+        }
+      }
+    } catch {}
 
     return null;
   } catch (error) {

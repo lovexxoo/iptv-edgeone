@@ -1,7 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { CHANNEL_MAP, API_BASE, STREAM_BASE, DEFAULT_HEADERS } from '../config';
 
 export const runtime = 'edge';
+
+// 频道映射表
+const CHANNEL_MAP: Record<string, string> = {
+  ynws: 'yunnanweishi',     // 云南卫视
+  ynds: 'yunnandushi',      // 云南都市
+  ynyl: 'yunnanyule',       // 云南娱乐
+  yngg: 'yunnangonggong',   // 云南公共
+  yngj: 'yunnanguoji',      // 云南国际
+  ynse: 'yunnanshaoer',     // 云南少儿
+};
+
+// API配置
+const API_BASE = 'https://yntv-api.yntv.cn';
+const STREAM_BASE = 'https://tvlive.yntv.cn';
+
+// 请求头配置
+const DEFAULT_HEADERS = {
+  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+  'Accept': 'application/json, text/plain, */*',
+  'Accept-Language': 'zh-CN,zh;q=0.9',
+  'Origin': 'https://www.yntv.cn',
+  'Referer': 'https://www.yntv.cn/',
+};
 
 interface StreamInfo {
   url: string;
@@ -9,7 +31,9 @@ interface StreamInfo {
   time: number;
 }
 
-// 获取M3U8播放列表
+/**
+ * 获取M3U8播放列表
+ */
 async function getM3U8Playlist(channelId: string, host: string, pathname: string): Promise<Response> {
   const channelName = CHANNEL_MAP[channelId];
   
@@ -46,12 +70,13 @@ async function getM3U8Playlist(channelId: string, host: string, pathname: string
     let m3u8Content = await m3u8Response.text();
 
     // 3. 替换TS文件路径为代理路径
+    // 注意: TS URL传递时不要使用encodeURIComponent,直接拼接即可
     const tsBaseUrl = `${STREAM_BASE}/live/${channelName}/`;
     const proxyBaseUrl = `http://${host}${pathname}?ts=`;
     
     m3u8Content = m3u8Content.replace(
       /([^\s]+\.ts)/gi,
-      (match) => `${proxyBaseUrl}${encodeURIComponent(tsBaseUrl + match)}`
+      (match) => `${proxyBaseUrl}${tsBaseUrl}${match}`
     );
 
     return new NextResponse(m3u8Content, {
@@ -66,7 +91,9 @@ async function getM3U8Playlist(channelId: string, host: string, pathname: string
   }
 }
 
-// 代理TS文件
+/**
+ * 代理TS文件
+ */
 async function proxyTSFile(tsUrl: string): Promise<Response> {
   try {
     const response = await fetch(tsUrl, {
@@ -98,14 +125,45 @@ export async function GET(request: NextRequest) {
   const channelId = searchParams.get('id') || 'ynws';
   const tsUrl = searchParams.get('ts');
 
+  // 如果有ts参数,代理TS文件
+  if (tsUrl) {
+    return proxyTSFile(tsUrl);
+  }
+
+  // 如果是list请求,返回频道列表
+  if (channelId === 'list') {
+    let m3u8Content = '#EXTM3U\n';
+    
+    const url = new URL(request.url);
+    const baseUrl = `${url.protocol}//${url.host}/api/yunnan`;
+
+    for (const [cid, name] of Object.entries(CHANNEL_MAP)) {
+      m3u8Content += `#EXTINF:-1,云南${name}\n`;
+      m3u8Content += `${baseUrl}?id=${cid}\n`;
+    }
+
+    return new NextResponse(m3u8Content, {
+      headers: {
+        'Content-Type': 'application/vnd.apple.mpegurl',
+        'Cache-Control': 'public, max-age=3600',
+      },
+    });
+  }
+
+  // 检查频道是否存在
+  if (!CHANNEL_MAP[channelId]) {
+    return new NextResponse(
+      `Channel not found: ${channelId}\nAvailable channels: ${Object.keys(CHANNEL_MAP).join(', ')}`,
+      {
+        status: 404,
+        headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+      }
+    );
+  }
+
   const host = request.headers.get('host') || '';
   const pathname = new URL(request.url).pathname;
 
-  // 如果有ts参数,代理TS文件
-  if (tsUrl) {
-    return proxyTSFile(decodeURIComponent(tsUrl));
-  }
-
-  // 否则返回M3U8播放列表
+  // 返回M3U8播放列表
   return getM3U8Playlist(channelId, host, pathname);
 }

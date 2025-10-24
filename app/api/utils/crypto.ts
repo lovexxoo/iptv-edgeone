@@ -185,3 +185,60 @@ export async function sha256(message: string): Promise<string> {
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
+
+/**
+ * AES-256-CBC解密 (使用Web Crypto API)
+ * 用于山东TV API响应解密
+ * 
+ * @param base64Data - Base64编码的加密数据
+ * @param keyHex - 十六进制格式的密钥
+ * @param ivHex - 十六进制格式的初始化向量
+ * @returns Promise<解密后的字符串>
+ */
+export async function aesDecrypt(base64Data: string, keyHex: string, ivHex: string): Promise<string> {
+  // 将hex转为Uint8Array
+  function hexToBytes(hex: string): Uint8Array {
+    const bytes = new Uint8Array(hex.length / 2);
+    for (let i = 0; i < hex.length; i += 2) {
+      bytes[i / 2] = parseInt(hex.substr(i, 2), 16);
+    }
+    return bytes;
+  }
+
+  // Base64解码
+  function base64ToBytes(base64: string): Uint8Array {
+    const binaryString = atob(base64);
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    return bytes;
+  }
+
+  const keyBytes = hexToBytes(keyHex);
+  const ivBytes = hexToBytes(ivHex);
+  const encryptedBytes = base64ToBytes(base64Data);
+
+  // 导入密钥 - 使用slice(0)创建新的ArrayBuffer
+  const cryptoKey = await crypto.subtle.importKey(
+    'raw',
+    keyBytes.slice(0),
+    { name: 'AES-CBC', length: 256 },
+    false,
+    ['decrypt']
+  );
+
+  // 解密 - 使用slice(0)创建新的ArrayBuffer
+  const decrypted = await crypto.subtle.decrypt(
+    { name: 'AES-CBC', iv: ivBytes.slice(0) },
+    cryptoKey,
+    encryptedBytes.slice(0)
+  );
+
+  // 转换为字符串 (移除PKCS7 padding)
+  const bytes = new Uint8Array(decrypted);
+  const paddingLength = bytes[bytes.length - 1];
+  const textBytes = bytes.slice(0, bytes.length - paddingLength);
+  
+  return new TextDecoder().decode(textBytes);
+}

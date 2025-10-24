@@ -28,16 +28,26 @@ const SECRET = '9dd4b0400f6e4d558f2b3497d734c2b4';
 const UUID = 'D5COmve6IQgwXvsJ4E3uxBstqxtDSCYW';
 
 /**
- * 转换时间戳
+ * 转换时间戳 - 原始正确算法
  */
 function transformTimestamp(timestamp: number): number {
   const parts = [
-    (timestamp >> 24) & 0xFF,
-    (timestamp >> 16) & 0xFF,
-    (timestamp >> 8) & 0xFF,
-    timestamp & 0xFF,
+    255 & timestamp,
+    (timestamp & 65280) >> 8,
+    (timestamp & 16711680) >> 16,
+    (timestamp & 4278190080) >> 24,
   ];
-  return (parts[3] << 24) | (parts[2] << 16) | (parts[1] << 8) | parts[0];
+
+  for (let i = 0; i < parts.length; i++) {
+    parts[i] = ((240 & parts[i]) ^ 240) | ((1 + (parts[i] & 15)) & 15);
+  }
+
+  return (
+    parts[3] |
+    (((parts[2] << 8) << 32) >> 32) |
+    (((parts[1] << 16) << 32) >> 32) |
+    (((parts[0] << 24) << 32) >> 32)
+  );
 }
 
 /**
@@ -101,6 +111,67 @@ async function getAccessToken(): Promise<{token: string | null, debug: any}> {
   }
 }
 
+/**
+ * 获取播放地址
+ */
+async function getStreamUrl(extraId: number, authorization: string): Promise<{ url: string | null; debug?: any }> {
+  const playDataUrl = 'https://publish-lizhi.jstv.com/nav/7510';
+  const debugInfo: any = {
+    extraId,
+    apiUrl: playDataUrl,
+  };
+
+  try {
+    const response = await fetch(playDataUrl, {
+      headers: {
+        'Authorization': `Bearer ${authorization}`,
+      },
+    });
+
+    debugInfo.status = response.status;
+    debugInfo.statusText = response.statusText;
+
+    if (!response.ok) {
+      debugInfo.error = 'Response not OK';
+      return { url: null, debug: debugInfo };
+    }
+
+    const data = await response.json();
+    debugInfo.dataStructure = {
+      hasData: !!data?.data,
+      hasChildList: !!data?.data?.childList,
+      childListLength: data?.data?.childList?.length || 0,
+      hasArticles: !!data?.data?.childList?.[0]?.articles,
+      articlesCount: data?.data?.childList?.[0]?.articles?.length || 0,
+    };
+
+    // 查找对应频道
+    if (data?.data?.childList?.[0]?.articles) {
+      const articles = data.data.childList[0].articles;
+      debugInfo.availableExtraIds = articles.map((a: any) => a.extraId);
+      
+      for (const article of articles) {
+        // 注意: API返回的extraId是字符串,需要转换后比较
+        if (String(article.extraId) === String(extraId)) {
+          const url = article.extraJson?.url || null;
+          debugInfo.found = true;
+          debugInfo.url = url;
+          return { url, debug: debugInfo };
+        }
+      }
+      debugInfo.found = false;
+      debugInfo.error = `extraId ${extraId} not found in articles`;
+    } else {
+      debugInfo.error = 'Invalid data structure';
+    }
+
+    return { url: null, debug: debugInfo };
+  } catch (error) {
+    debugInfo.error = String(error);
+    return { url: null, debug: debugInfo };
+  }
+}
+
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const id = searchParams.get('channel');
@@ -129,6 +200,19 @@ export async function GET(request: NextRequest) {
   // 获取访问Token
   const { token: accessToken, debug: tokenDebug } = await getAccessToken();
   
+  if (!accessToken) {
+    return new NextResponse(JSON.stringify({
+      error: 'Failed to get access token',
+      tokenDebug,
+    }, null, 2), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  // 获取流URL
+  const streamResult = await getStreamUrl(extraId, accessToken);
+
   if (debug) {
     return new NextResponse(JSON.stringify({
       channel: id,
@@ -136,19 +220,22 @@ export async function GET(request: NextRequest) {
       extraId,
       tokenDebug,
       accessToken: accessToken ? `${accessToken.substring(0, 20)}...` : null,
+      streamDebug: streamResult.debug,
+      streamUrl: streamResult.url || 'Failed to get stream URL',
     }, null, 2), {
       headers: { 'Content-Type': 'application/json' },
     });
   }
 
-  if (!accessToken) {
-    return new NextResponse('Failed to get access token', {
-      status: 500,
+  if (!streamResult.url) {
+    return new NextResponse('Failed to get stream URL', {
+      status: 404,
       headers: { 'Content-Type': 'text/plain; charset=utf-8' },
     });
   }
 
-  return new NextResponse('Debug mode: add ?debug=1 to see details', {
-    headers: { 'Content-Type': 'text/plain' },
+  return new NextResponse(null, {
+    status: 302,
+    headers: { Location: streamResult.url },
   });
 }

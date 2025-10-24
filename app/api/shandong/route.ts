@@ -5,7 +5,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { md5 } from '../utils/crypto';
+import { md5, aesDecrypt } from '../utils/crypto';
 
 export const runtime = 'edge';
 
@@ -54,6 +54,7 @@ const CHANNEL_NAMES: { [key: string]: string } = {
 
 /**
  * 获取播放地址
+ * 响应数据格式: gzip压缩 → Base64编码 → AES-256-CBC加密
  */
 async function getStreamUrl(channelId: number, path: string): Promise<string | null> {
   const timestamp = Math.floor(Date.now() / 1000);
@@ -61,28 +62,60 @@ async function getStreamUrl(channelId: number, path: string): Promise<string | n
 
   const url = `https://sdxw.iqilu.com/v1/app/play/tv${path}/live?e=1&e=1`;
 
+  // AES解密密钥和IV (来自CGI)
+  const AES_KEY_HEX = '6262393735383763666138356563653535343961336432353766373931396633';
+  const AES_IV_HEX = '30303030303030303030303030303030';
+
   try {
+    // 使用GET请求,并添加完整的header (与CGI一致)
     const response = await fetch(url, {
-      method: 'POST',
+      method: 'GET',
       headers: {
         'version': '10.1.1',
         'orgid': '21',
         'platform': `android${timestamp}`,
+        'imei': '7f918d21082ed7eb',
+        'CQ-AGENT': '{os:android,imei:7f918d21082ed7eb,osversion:7.1.1,network:wifi,device_model:OPPO R9s,version:10.1.1,brand:oppo,core:2.0.0}',
+        'timestamp': '',
+        'noncestr': 'huangye',
         'sign': sign,
-        'appVersion': '10.1.1',
-        'sysVersion': '12',
-        'Content-Type': 'application/json',
+        'User-Agent': 'chuangqi.o.21.com.iqilu.ksd/10.1.1',
+        'Host': 'sdxw.iqilu.com',
+        'Connection': 'Keep-Alive',
+        'Accept-Encoding': 'gzip',
       },
-      body: JSON.stringify({
-        channelId: channelId,
-        platType: 1,
-      }),
     });
 
     if (!response.ok) return null;
 
-    const data = await response.json();
-    return data?.data?.liveUrl || null;
+    // 1. 获取响应文本 (fetch会自动处理gzip)
+    const base64Data = await response.text();
+    
+    // 2. AES-256-CBC解密
+    const decrypted = await aesDecrypt(base64Data, AES_KEY_HEX, AES_IV_HEX);
+    
+    // 3. 使用正则表达式提取stream URL (不用JSON.parse,因为数据可能不规范)
+    // 匹配包含目标id的JSON对象
+    const pattern = new RegExp(`\\{([^{}]*(?:\\{[^{}]*\\}[^{}]*)*)\\}`, 'gs');
+    let match;
+    
+    while ((match = pattern.exec(decrypted)) !== null) {
+      const obj = match[1];
+      
+      // 检查是否包含目标ID
+      const idMatch = new RegExp(`"id"\\s*:\\s*${channelId}\\b`).exec(obj);
+      if (idMatch) {
+        // 提取stream字段
+        const streamMatch = /"stream"\s*:\s*"([^"]+)"/.exec(obj);
+        if (streamMatch) {
+          // JSON反转义: \/ → /
+          const stream = streamMatch[1].replace(/\\\//g, '/');
+          return stream;
+        }
+      }
+    }
+
+    return null;
   } catch (error) {
     console.error('Get stream URL error:', error);
     return null;

@@ -5,6 +5,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { md5 } from '../utils/crypto';
 
 export const runtime = 'edge';
 
@@ -53,10 +54,19 @@ async function getStreamUrl(index: number): Promise<string | null> {
       return null;
     }
 
-    // 提取所有值
-    const liveStreams = liveStreamMatches.map(m => m.match(/"([^"]+)"/)?.[1] || '');
-    const liveUris = liveUriMatches.map(m => m.match(/"([^"]+)"/)?.[1] || '');
-    const liveKeys = liveKeyMatches.map(m => m.match(/"([^"]+)"/)?.[1] || '');
+    // 提取所有值 - 使用正确的正则捕获组
+    const liveStreams = liveStreamMatches.map(m => {
+      const match = /"liveStream"\s*:\s*"([^"]+)"/.exec(m);
+      return match ? match[1] : '';
+    });
+    const liveUris = liveUriMatches.map(m => {
+      const match = /"liveUri"\s*:\s*"([^"]+)"/.exec(m);
+      return match ? match[1] : '';
+    });
+    const liveKeys = liveKeyMatches.map(m => {
+      const match = /"liveKey"\s*:\s*"([^"]+)"/.exec(m);
+      return match ? match[1] : '';
+    });
 
     // 每个频道有3个liveStream，取第一个（index * 3）
     const streamIndex = index * 3;
@@ -68,12 +78,17 @@ async function getStreamUrl(index: number): Promise<string | null> {
     const liveUri = liveUris[uriIndex] || '';
     const liveKey = liveKeys[uriIndex] || '';
 
-    // 构建最终URL
-    let finalUrl = liveStream;
-    if (liveUri && liveKey) {
-      const separator = liveStream.includes('?') ? '&' : '?';
-      finalUrl = `${liveStream}${separator}${liveUri}=${liveKey}`;
+    if (!liveStream || !liveUri || !liveKey) {
+      return null;
     }
+
+    // 生成时间戳和签名 (参考PHP: 当前时间 + 10000秒)
+    const timestamp = Math.floor(Date.now() / 1000) + 10000;
+    const signString = `${liveUri}${liveKey}${timestamp}`;
+    const signature = md5(signString);
+
+    // 构建最终URL: liveStream?t=timestamp&k=signature
+    const finalUrl = `${liveStream}?t=${timestamp}&k=${signature}`;
 
     return finalUrl;
   } catch (error) {

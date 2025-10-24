@@ -18,19 +18,19 @@ async function getStreamUrl(id: string): Promise<string | null> {
     const response = await fetch(API_URL);
     if (!response.ok) return null;
 
-    const text = await response.text();
+    // 直接解析JSON
+    const data = await response.json();
+    
+    if (!Array.isArray(data)) {
+      return null;
+    }
 
-    // 简单JSON解析（避免完整JSON.parse）
-    const idPattern = new RegExp(`"id"\\s*:\\s*${id}[,\\s]`, 'i');
-    if (!idPattern.test(text)) return null;
-
-    // 提取该ID对应的m3u8 URL
-    const segments = text.split('"id"');
-    for (const segment of segments) {
-      if (segment.includes(`:${id},`) || segment.includes(`:${id}`)) {
-        const m3u8Match = segment.match(/"m3u8"\s*:\s*"([^"]+)"/);
-        if (m3u8Match) {
-          return m3u8Match[1].replace(/\\\//g, '/');
+    // 查找匹配的频道
+    for (const item of data) {
+      if (item.id && String(item.id) === String(id)) {
+        if (item.m3u8) {
+          // JSON反转义
+          return item.m3u8.replace(/\\\//g, '/');
         }
       }
     }

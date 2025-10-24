@@ -46,7 +46,7 @@ const UUID = 'D5COmve6IQgwXvsJ4E3uxBstqxtDSCYW';
  */
 
 /**
- * 转换时间戳
+ * 转换时间戳 - 原始正确算法
  */
 function transformTimestamp(timestamp: number): number {
   const parts = [
@@ -125,7 +125,8 @@ async function getStreamUrl(extraId: number, authorization: string): Promise<str
     // 查找对应频道
     if (data?.data?.childList?.[0]?.articles) {
       for (const article of data.data.childList[0].articles) {
-        if (article.extraId === extraId) {
+        // 注意: API返回的extraId是字符串,需要转换后比较
+        if (String(article.extraId) === String(extraId)) {
           return article.extraJson?.url || null;
         }
       }
