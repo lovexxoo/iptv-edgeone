@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
   today.setHours(0, 0, 0, 0);
   const todayMs = today.getTime();
   const todayIso = today.toISOString();
-  const timestampStr = todayMs.toString() + '000';
+  const timestampStr = todayMs.toString();
   
   // 计算r和l
   let r = 0;

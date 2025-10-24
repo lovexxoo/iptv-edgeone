@@ -200,7 +200,7 @@ function getPathname(code: string): string {
   // 获取今天0点的时间戳(毫秒)
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  const timestampStr = today.getTime().toString() + '000';
+  const timestampStr = today.getTime().toString();
   
   // 计算r和l
   let r = 0;
