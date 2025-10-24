@@ -109,6 +109,12 @@ function md5(text: string): string {
   if (wordArray[lengthIdx] === undefined) wordArray[lengthIdx] = 0;
   wordArray[lengthIdx] = msgLength * 8;
 
+  // 确保wordArray完全填充,避免undefined
+  const requiredLength = Math.ceil(wordArray.length / 16) * 16;
+  for (let i = wordArray.length; i < requiredLength; i++) {
+    wordArray[i] = 0;
+  }
+
   // MD5常量
   let a = 0x67452301;
   let b = 0xEFCDAB89;
