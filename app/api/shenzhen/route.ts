@@ -227,10 +227,11 @@ function md5(string: string): string {
   }
   
   function hex(x) {
+    const result = [];
     for (let i = 0; i < x.length; i++) {
-      x[i] = rhex(x[i]);
+      result[i] = rhex(x[i]);
     }
-    return x.join('');
+    return result.join('');
   }
   
   return hex(md51(string));
