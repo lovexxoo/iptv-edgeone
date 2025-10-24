@@ -147,10 +147,11 @@ function md5(string: string): string {
   }
 
   function hex(x: number[]): string {
+    const result: string[] = [];
     for (let i = 0; i < x.length; i++) {
-      x[i] = rhex(x[i]);
+      result[i] = rhex(x[i]);
     }
-    return x.join('');
+    return result.join('');
   }
 
   function add32(a: number, b: number): number {
