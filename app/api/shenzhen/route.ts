@@ -195,16 +195,121 @@ function md5(text: string): string {
 
 
 function getPathname(code: string): string {
+  // 深圳台pathname生成算法 - 从Perl CGI移植
+  
+  // 获取今天0点的时间戳(毫秒)
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const timestampStr = today.getTime().toString() + '000';
   
-  const bigIntValue = BigInt(timestampStr);
-  const divisor = BigInt(86400000);
-  const modulo = BigInt(10000);
-  const result = (bigIntValue / divisor) % modulo;
+  // 计算r和l
+  let r = 0;
+  let l = 0;
+  let d = -1;
   
-  return `${code}_${result}`;
+  for (let i = 0; i < code.length; i++) {
+    const charCode = code.charCodeAt(i);
+    r += charCode;
+    if (d !== -1) {
+      l += (d - charCode);
+    }
+    d = charCode;
+  }
+  r += l;
+  
+  // 转换为36进制
+  const toBase36 = (num: number): string => {
+    if (num === 0) return '0';
+    const chars = '0123456789abcdefghijklmnopqrstuvwxyz';
+    let result = '';
+    while (num > 0) {
+      result = chars[num % 36] + result;
+      num = Math.floor(num / 36);
+    }
+    return result;
+  };
+  
+  // 大整数转36进制（使用字符串处理）
+  const bigIntToBase36 = (numStr: string): string => {
+    const chars = '0123456789abcdefghijklmnopqrstuvwxyz';
+    let result = '';
+    
+    const bigIntMod = (str: string, divisor: number): number => {
+      let remainder = 0;
+      for (const digit of str) {
+        remainder = (remainder * 10 + parseInt(digit)) % divisor;
+      }
+      return remainder;
+    };
+    
+    const bigIntDiv = (str: string, divisor: number): string => {
+      let result = '';
+      let remainder = 0;
+      for (const digit of str) {
+        remainder = remainder * 10 + parseInt(digit);
+        const quotient = Math.floor(remainder / divisor);
+        result += quotient;
+        remainder = remainder % divisor;
+      }
+      return result.replace(/^0+/, '') || '0';
+    };
+    
+    let num = numStr;
+    while (num !== '0' && num !== '') {
+      const remainder = bigIntMod(num, 36);
+      result = chars[remainder] + result;
+      num = bigIntDiv(num, 36);
+    }
+    
+    return result || '0';
+  };
+  
+  const s = toBase36(r);
+  let c = bigIntToBase36(timestampStr);
+  
+  // 计算u (c字符串的ASCII码之和)
+  let u = 0;
+  for (const char of c) {
+    u += char.charCodeAt(0);
+  }
+  
+  // 旋转c字符串
+  c = c.substring(5) + c.substring(0, 5);
+  
+  const f = Math.abs(u - r);
+  c = s.split('').reverse().join('') + c;
+  
+  const g = c.substring(0, 4);
+  const w = c.substring(4);
+  const wday = today.getDay();
+  const b = wday % 2;
+  
+  // 构建m数组
+  const m: string[] = [];
+  for (let a = 0; a < code.length; a++) {
+    if (a % 2 === b) {
+      m.push(c[a % c.length]);
+    } else {
+      const hIndex = a - 1;
+      if (hIndex >= 0) {
+        const h = code[hIndex];
+        const v = g.indexOf(h);
+        if (v === -1) {
+          m.push(h);
+        } else {
+          m.push(w[v]);
+        }
+      } else {
+        m.push(g[a % g.length]);
+      }
+    }
+  }
+  
+  const mStr = m.join('');
+  const f36 = toBase36(f);
+  const result = (f36.split('').reverse().join('') + mStr).substring(0, code.length);
+  
+  return result;
 }
 
 export async function GET(request: NextRequest) {
