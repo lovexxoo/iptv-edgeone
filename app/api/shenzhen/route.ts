@@ -284,7 +284,7 @@ function getPathname(code: string): string {
   
   const g = c.substring(0, 4);
   const w = c.substring(4);
-  const wday = today.getDay();
+  const wday = now.getDay();
   const b = wday % 2;
   
   // 构建m数组
