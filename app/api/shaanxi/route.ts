@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
     
     // 构建正确的baseUrl
     const protocol = request.headers.get('x-forwarded-proto') || 'https';
-    const host = request.headers.get('host') || request.headers.get('x-forwarded-host') || 'localhost:3000';
+    const host = request.headers.get('x-forwarded-host') || request.headers.get('host') || 'localhost:3000';
     const baseUrl = `${protocol}://${host}/api/shaanxi`;
 
     for (const [cid, name] of Object.entries(TV_CHANNELS)) {
