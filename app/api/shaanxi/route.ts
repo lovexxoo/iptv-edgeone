@@ -54,7 +54,11 @@ export async function GET(request: NextRequest) {
 
   if (id === 'list') {
     let m3u8Content = '#EXTM3U\n# 陕西广播电视台\n\n# 电视频道\n';
-    const baseUrl = request.url.split('?')[0];
+    
+    // 构建正确的baseUrl
+    const protocol = request.headers.get('x-forwarded-proto') || 'https';
+    const host = request.headers.get('host') || request.headers.get('x-forwarded-host') || 'localhost:3000';
+    const baseUrl = `${protocol}://${host}/api/shaanxi`;
 
     for (const [cid, name] of Object.entries(TV_CHANNELS)) {
       m3u8Content += `#EXTINF:-1,${name}\n${baseUrl}?id=${cid}\n`;

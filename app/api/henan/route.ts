@@ -114,7 +114,11 @@ export async function GET(request: NextRequest) {
   // 如果是list请求，返回频道列表
   if (id === 'list') {
     let m3u8Content = '#EXTM3U\n';
-    const baseUrl = request.url.split('?')[0];
+    
+    // 构建正确的baseUrl
+    const protocol = request.headers.get('x-forwarded-proto') || 'https';
+    const host = request.headers.get('host') || request.headers.get('x-forwarded-host') || 'localhost:3000';
+    const baseUrl = `${protocol}://${host}/api/henan`;
 
     for (const [cid, _] of Object.entries(CHANNEL_MAP)) {
       const channelName = CHANNEL_NAMES[cid];
