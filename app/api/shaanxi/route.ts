@@ -53,12 +53,22 @@ export async function GET(request: NextRequest) {
   const isRadio = type === 'radio';
 
   if (id === 'list') {
-    let m3u8Content = '#EXTM3U\n# 陕西广播电视台\n\n# 电视频道\n';
+    let m3u8Content = '#EXTM3U\n';
     
-    // 构建正确的baseUrl
-    // 从request.url中解析出完整的baseUrl
     const url = new URL(request.url);
-    const baseUrl = `${url.protocol}//${url.host}/api/shaanxi`;
+    let baseHost = url.host;
+    
+    if (baseHost.includes('localhost') || baseHost.includes('pages-scf') || baseHost.includes('qcloudteo.com')) {
+      const referer = request.headers.get('referer');
+      if (referer) {
+        try {
+          const refererUrl = new URL(referer);
+          baseHost = refererUrl.host;
+        } catch {}
+      }
+    }
+    
+    const baseUrl = `${url.protocol}//${baseHost}/api/shaanxi`;
 
     for (const [cid, name] of Object.entries(TV_CHANNELS)) {
       m3u8Content += `#EXTINF:-1,${name}\n${baseUrl}?id=${cid}\n`;

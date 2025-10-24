@@ -234,9 +234,23 @@ export async function GET(request: NextRequest) {
   if (id === 'list') {
     let m3u8Content = '#EXTM3U\n';
     
-    // 从request.url中解析出完整的baseUrl
+    // EdgeOne Pages的request.url是内部地址(localhost:9000)
+    // 需要智能构建正确的baseUrl
     const url = new URL(request.url);
-    const baseUrl = `${url.protocol}//${url.host}/api/4k`;
+    let baseHost = url.host;
+    
+    // 如果是EdgeOne内部域名，尝试从Referer获取真实域名
+    if (baseHost.includes('localhost') || baseHost.includes('pages-scf') || baseHost.includes('qcloudteo.com')) {
+      const referer = request.headers.get('referer');
+      if (referer) {
+        try {
+          const refererUrl = new URL(referer);
+          baseHost = refererUrl.host;
+        } catch {}
+      }
+    }
+    
+    const baseUrl = `${url.protocol}//${baseHost}/api/4k`;
 
     for (const [cid, _] of Object.entries(CHANNEL_MAP)) {
       const channelName = CHANNEL_NAMES[cid];

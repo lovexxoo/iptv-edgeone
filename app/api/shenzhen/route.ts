@@ -60,10 +60,20 @@ export async function GET(request: NextRequest) {
   if (id === 'list') {
     let m3u8Content = '#EXTM3U\n';
     
-    // 构建正确的baseUrl
-    // 从request.url中解析出完整的baseUrl
     const url = new URL(request.url);
-    const baseUrl = `${url.protocol}//${url.host}/api/shenzhen`;
+    let baseHost = url.host;
+    
+    if (baseHost.includes('localhost') || baseHost.includes('pages-scf') || baseHost.includes('qcloudteo.com')) {
+      const referer = request.headers.get('referer');
+      if (referer) {
+        try {
+          const refererUrl = new URL(referer);
+          baseHost = refererUrl.host;
+        } catch {}
+      }
+    }
+    
+    const baseUrl = `${url.protocol}//${baseHost}/api/shenzhen`;
     
     for (const [cid, _] of Object.entries(CHANNEL_MAP)) {
       m3u8Content += `#EXTINF:-1,${CHANNEL_NAMES[cid]}\n${baseUrl}?id=${cid}\n`;
