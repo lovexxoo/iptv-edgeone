@@ -134,15 +134,42 @@ async function getColumnData(token: string): Promise<any> {
  */
 function findPlayUrl(dataArr: any, targetId: number): string | null {
   if (!dataArr?.data || !Array.isArray(dataArr.data)) {
+    console.error('Invalid data structure: data is not an array');
     return null;
   }
 
-  for (const itemData of dataArr.data) {
-    if (itemData?.mediaAsset?.id === targetId) {
-      return itemData.mediaAsset.url || null;
+  console.log(`Searching through ${dataArr.data.length} items for ID ${targetId}`);
+
+  // 遍历数据数组查找目标频道
+  for (let i = 0; i < dataArr.data.length; i++) {
+    const item = dataArr.data[i];
+    
+    // 调试：打印每个项的结构（只打印前3个）
+    if (i < 3) {
+      console.log(`Item ${i} structure:`, JSON.stringify(item, null, 2).substring(0, 300));
+    }
+    
+    // 检查多种可能的数据结构
+    // 情况1: item.mediaAsset.id 和 item.mediaAsset.url
+    if (item?.mediaAsset?.id === targetId && item?.mediaAsset?.url) {
+      console.log(`Found URL in mediaAsset (case 1): ${item.mediaAsset.url}`);
+      return item.mediaAsset.url;
+    }
+    
+    // 情况2: item.id 和 item.url (直接在item层级)
+    if (item?.id === targetId && item?.url) {
+      console.log(`Found URL in item directly (case 2): ${item.url}`);
+      return item.url;
+    }
+    
+    // 情况3: 嵌套在其他结构中
+    if (item?.data?.mediaAsset?.id === targetId && item?.data?.mediaAsset?.url) {
+      console.log(`Found URL in nested data.mediaAsset (case 3): ${item.data.mediaAsset.url}`);
+      return item.data.mediaAsset.url;
     }
   }
 
+  console.error(`Target ID ${targetId} not found in any items`);
   return null;
 }
 
@@ -205,20 +232,43 @@ async function makeSign(url: string, params: string, timeMillis: number, key: st
  */
 async function getPlayUrl(id: string): Promise<string | null> {
   if (!CHANNEL_MAP[id]) {
+    console.error(`Channel ID not found in map: ${id}`);
     return null;
   }
 
   // 获取token
   const token = await getToken();
-  if (!token) return null;
+  if (!token) {
+    console.error('Failed to get token');
+    return null;
+  }
 
   // 获取频道列表数据
   const dataArr = await getColumnData(token);
-  if (!dataArr) return null;
+  if (!dataArr) {
+    console.error('Failed to get column data');
+    return null;
+  }
+
+  // 调试：打印数据结构
+  console.log('Column data structure:', JSON.stringify(dataArr).substring(0, 500));
+  console.log('Data array length:', dataArr?.data?.length);
 
   // 查找播放地址
   const targetId = CHANNEL_MAP[id];
+  console.log(`Looking for channel ID: ${targetId} (${id})`);
+  
   const playUrl = findPlayUrl(dataArr, targetId);
+  
+  if (!playUrl) {
+    console.error(`Play URL not found for channel ${id} (ID: ${targetId})`);
+    // 打印前几个数据项用于调试
+    if (dataArr?.data && Array.isArray(dataArr.data)) {
+      console.log('Sample data items:', JSON.stringify(dataArr.data.slice(0, 2), null, 2));
+    }
+  } else {
+    console.log(`Found play URL for ${id}: ${playUrl.substring(0, 100)}...`);
+  }
 
   return playUrl;
 }
