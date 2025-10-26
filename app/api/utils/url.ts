@@ -1,44 +1,41 @@
 /**
  * 获取真实的请求域名
- * EdgeOne Pages内部使用localhost:9000，需要从headers中获取真实域名
+ * EdgeOne Pages内部使用localhost:9000或pages-scf域名，需要从headers中获取真实域名
  */
 export function getRealHost(request: Request): string {
   // 尝试多种方式获取真实域名
   
-  // 1. 从 Host header 获取（最可靠）
-  const hostHeader = request.headers.get('host');
-  if (hostHeader && !hostHeader.includes('localhost') && !hostHeader.includes('pages-scf')) {
-    return hostHeader;
-  }
-  
-  // 2. 从 X-Forwarded-Host 获取
+  // 1. 从 X-Forwarded-Host 获取（EdgeOne代理时最可靠）
   const forwardedHost = request.headers.get('x-forwarded-host');
-  if (forwardedHost) {
+  if (forwardedHost && !forwardedHost.includes('localhost') && !forwardedHost.includes('pages-scf') && !forwardedHost.includes('qcloudteo.com')) {
     return forwardedHost;
   }
   
-  // 3. 从 X-Original-Host 获取
+  // 2. 从 X-Original-Host 获取
   const originalHost = request.headers.get('x-original-host');
-  if (originalHost) {
+  if (originalHost && !originalHost.includes('localhost') && !originalHost.includes('pages-scf') && !originalHost.includes('qcloudteo.com')) {
     return originalHost;
   }
   
-  // 4. 从 Referer 获取（浏览器访问时有效）
+  // 3. 从 Referer 获取（浏览器访问时有效）
   const referer = request.headers.get('referer');
   if (referer) {
     try {
       const refererUrl = new URL(referer);
-      return refererUrl.host;
+      const refererHost = refererUrl.host;
+      if (!refererHost.includes('localhost') && !refererHost.includes('pages-scf') && !refererHost.includes('qcloudteo.com')) {
+        return refererHost;
+      }
     } catch {}
   }
   
-  // 5. 从请求URL获取（降级方案）
-  try {
-    const url = new URL(request.url);
-    return url.host;
-  } catch {}
+  // 4. 从 Host header 获取（可能被EdgeOne修改）
+  const hostHeader = request.headers.get('host');
+  if (hostHeader && !hostHeader.includes('localhost') && !hostHeader.includes('pages-scf') && !hostHeader.includes('qcloudteo.com')) {
+    return hostHeader;
+  }
   
-  // 6. 默认返回配置的域名
+  // 5. 默认返回配置的域名（EdgeOne环境下的兜底方案）
   return 'iptv.tmd2.com';
 }
 
