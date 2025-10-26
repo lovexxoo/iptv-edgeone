@@ -49,13 +49,16 @@ async function getToken(): Promise<string | null> {
   // 检查缓存
   const cached = cache.get('visitor_token');
   if (cached && cached.expires > Date.now()) {
+    console.log('[getToken] Using cached token');
     return cached.value;
   }
 
   const timeMillis = Date.now();
-  const sign = await makeSign(API_URL1, '', timeMillis, AES_KEY);
-
+  
   try {
+    const sign = await makeSign(API_URL1, '', timeMillis, AES_KEY);
+    console.log(`[getToken] Sign generated, length: ${sign.length}`);
+
     const response = await fetch(API_URL1, {
       method: 'POST',
       headers: {
@@ -65,15 +68,27 @@ async function getToken(): Promise<string | null> {
       },
     });
 
-    if (!response.ok) return null;
+    console.log(`[getToken] Response status: ${response.status}`);
+    
+    if (!response.ok) {
+      const text = await response.text();
+      console.error('[getToken] Response not OK:', text.substring(0, 200));
+      return null;
+    }
 
     const data = await response.json();
-    if (!data?.success || !data?.data?.token) return null;
+    console.log('[getToken] Response data:', JSON.stringify(data).substring(0, 200));
+    
+    if (!data?.success || !data?.data?.token) {
+      console.error('[getToken] Invalid response structure');
+      return null;
+    }
 
     const token = data.data.token;
     // 缓存24小时
     cache.set('visitor_token', { value: token, expires: Date.now() + 86400000 });
 
+    console.log(`[getToken] Token obtained, length: ${token.length}`);
     return token;
   } catch (error) {
     console.error('Get token error:', error);
@@ -185,46 +200,55 @@ async function makeSign(url: string, params: string, timeMillis: number, key: st
   };
 
   const json = JSON.stringify(payload);
+  console.log(`[makeSign] Payload: ${json}`);
 
-  // Convert key to CryptoKey
-  const encoder = new TextEncoder();
-  const keyData = encoder.encode(key);
+  try {
+    // Convert key to CryptoKey
+    const encoder = new TextEncoder();
+    const keyData = encoder.encode(key);
 
-  const cryptoKey = await crypto.subtle.importKey(
-    'raw',
-    keyData,
-    { name: 'AES-CBC', length: 256 },
-    false,
-    ['encrypt']
-  );
+    const cryptoKey = await crypto.subtle.importKey(
+      'raw',
+      keyData,
+      { name: 'AES-CBC', length: 256 },
+      false,
+      ['encrypt']
+    );
 
-  // AES-256-ECB加密 (使用CBC模式模拟ECB)
-  const iv = new Uint8Array(16); // ECB不需要IV，用全0的IV
-  const data = encoder.encode(json);
+    // AES-256-ECB加密 (使用CBC模式模拟ECB)
+    const iv = new Uint8Array(16); // ECB不需要IV，用全0的IV
+    const data = encoder.encode(json);
 
-  // Padding to 16 bytes boundary (PKCS7)
-  const blockSize = 16;
-  const paddingLength = blockSize - (data.length % blockSize);
-  const paddedData = new Uint8Array(data.length + paddingLength);
-  paddedData.set(data);
-  for (let i = data.length; i < paddedData.length; i++) {
-    paddedData[i] = paddingLength;
+    // Padding to 16 bytes boundary (PKCS7)
+    const blockSize = 16;
+    const paddingLength = blockSize - (data.length % blockSize);
+    const paddedData = new Uint8Array(data.length + paddingLength);
+    paddedData.set(data);
+    for (let i = data.length; i < paddedData.length; i++) {
+      paddedData[i] = paddingLength;
+    }
+
+    const encrypted = await crypto.subtle.encrypt(
+      { name: 'AES-CBC', iv: iv },
+      cryptoKey,
+      paddedData
+    );
+
+    // Base64 encode
+    const bytes = new Uint8Array(encrypted);
+    let binary = '';
+    for (let i = 0; i < bytes.length; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    const base64 = btoa(binary);
+    const result = base64.replace(/[\r\n]/g, '');
+    
+    console.log(`[makeSign] Encrypted sign length: ${result.length}`);
+    return result;
+  } catch (error) {
+    console.error('[makeSign] Encryption error:', error);
+    throw error;
   }
-
-  const encrypted = await crypto.subtle.encrypt(
-    { name: 'AES-CBC', iv: iv },
-    cryptoKey,
-    paddedData
-  );
-
-  // Base64 encode
-  const bytes = new Uint8Array(encrypted);
-  let binary = '';
-  for (let i = 0; i < bytes.length; i++) {
-    binary += String.fromCharCode(bytes[i]);
-  }
-  const base64 = btoa(binary);
-  return base64.replace(/[\r\n]/g, '');
 }
 
 /**
