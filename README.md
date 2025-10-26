@@ -4,35 +4,141 @@
 
 ## 支持的电视台
 
-### 📺 4K频道 (9个)
-- btv4k, sh4k, js4k, zj4k, sd4k, hn4k, gd4k, sc4k, sz4k
+### 🎬 4K频道 (9个)
+- 北京卫视4K (btv4k)
+- 上海卫视4K (sh4k)
+- 江苏卫视4K (js4k)
+- 浙江卫视4K (zj4k)
+- 山东卫视4K (sd4k)
+- 湖南卫视4K (hn4k)
+- 广东卫视4K (gd4k)
+- 四川卫视4K (sc4k)
+- 深圳卫视4K (sz4k)
 
 ### 📺 北京TV (10个)
-- bjws, bjwy, bjjskj, bjys, bjcj, bjsh, bjxw, bjkk, bjws4k, bjty
+- 北京卫视 (bjws)
+- BRTV文艺 (bjwy)
+- BRTV纪实科教 (bjjskj)
+- BRTV影视 (bjys)
+- BRTV财经 (bjcj)
+- BRTV生活 (bjsh)
+- BRTV新闻 (bjxw)
+- 卡酷少儿 (bjkk)
+- 北京卫视4K (bjws4k)
+- BRTV体育休闲 (bjty)
 
 ### 📺 河南TV (17个)
-- hnws, hnds, hnms, hmfz, hndsj, hnxw, htgw, hngg, hnxc, hngj, hnly, wwbk, wspd, jczy, ydxj, xsj, gxpd
+- 河南卫视 (hnws)
+- 河南都市 (hnds)
+- 河南民生 (hnms)
+- 河南法治 (hmfz)
+- 河南电视剧 (hndsj)
+- 河南新闻 (hnxw)
+- 欢腾购物 (htgw)
+- 河南公共 (hngg)
+- 河南乡村 (hnxc)
+- 河南国际 (hngj)
+- 河南梨园 (hnly)
+- 文物宝库 (wwbk)
+- 武术世界 (wspd)
+- 睛彩中原 (jczy)
+- 移动戏曲 (ydxj)
+- 象视界 (xsj)
+- 国学频道 (gxpd)
 
 ### 📺 河北TV (8个)
-- hbws, hbjj, nmpd, hbds, hbys, hbse, hbgg, hbsj
+- 河北卫视 (hbws)
+- 经济生活 (hbjj)
+- 三农频道 (nmpd)
+- 河北都市 (hbds)
+- 河北影视剧 (hbys)
+- 少儿科教 (hbse)
+- 文旅·公共 (hbgg)
+- 三佳购物 (hbsj)
 
 ### 📺 江苏TV (10个)
-- jsws, jsws4k, jscs, jszy, jsys, jsxw, jsjy, jsxx, ymkt, jsgj
+- 江苏卫视 (jsws)
+- 江苏卫视4K (jsws4k)
+- 江苏城市 (jscs)
+- 江苏综艺 (jszy)
+- 江苏影视 (jsys)
+- 江苏新闻 (jsxw)
+- 江苏教育 (jsjy)
+- 体育休闲 (jsxx)
+- 优漫卡通 (ymkt)
+- 江苏国际 (jsgj)
 
 ### 📺 山东TV (26个)
-- sdws, xwpd, qlpd, txyx, shpd, zypd, wlpd, nkpd, sepd + 各地市电视台
+- 山东卫视 (sdws)
+- 新闻频道 (xwpd)
+- 齐鲁频道 (qlpd)
+- 体育休闲频道 (txyx)
+- 生活频道 (shpd)
+- 综艺频道 (zypd)
+- 文旅频道 (wlpd)
+- 农科频道 (nkpd)
+- 少儿频道 (sepd)
+- 济南台 (jndst)
+- 淄博台 (zbdst)
+- 枣庄台 (zzdst)
+- 东营台 (dydst)
+- 烟台台 (ytdst)
+- 潍坊台 (wfdst)
+- 泰安台 (tadst)
+- 威海台 (whdst)
+- 日照台 (rzdst)
+- 临沂台 (lydst)
+- 德州台 (dzdst)
+- 聊城台 (lcdst)
+- 滨州台 (bzdst)
+- 菏泽台 (hzdst)
+- 济宁台 (jxdst)
+- 莱芜台 (lzdst)
+- 章丘台 (zcdst)
 
-### 📺 陕西TV
-- 电视频道 + 广播频道
+### 📺 陕西TV (17个)
+- 农林卫视 (1126)
+- 新闻资讯 (1127)
+- 都市青春 (1128)
+- 银龄频道 (1129)
+- 秦腔频道 (1130)
+- 陕西卫视 (1131)
+- 体育休闲 (1179)
+- 乐家购物 (1241)
+- 移动电视 (1242)
+- 新闻广播 (2134)
+- 汽车调频 (2135)
+- 交通广播 (2136)
+- 音乐广播 (2137)
+- 都市广播 (2139)
+- 青少广播 (2140)
+- 戏曲广播 (2142)
+- 农村广播 (2143)
 
 ### 📺 深圳TV (11个)
-- szws4k, szws, szds, szdsj, szgg, szcj, szyl, szse, szyd, szyh, szgj
+- 深圳卫视4K (szws4k)
+- 深圳卫视 (szws)
+- 都市频道 (szds)
+- 电视剧频道 (szdsj)
+- 公共频道 (szgg)
+- 财经频道 (szcj)
+- 娱乐生活 (szyl)
+- 少儿频道 (szse)
+- 移动电视 (szyd)
+- 宜和购物频道 (szyh)
+- 国际频道 (szgj)
 
-### 📺 石家庄TV
-- 石家庄电视台频道
+### 📺 石家庄TV (动态)
+- 频道列表实时同步API
+- 请访问 /api/sjz?id=list 获取最新频道
 
 ### 📺 云南TV (6个)
-- ynws, ynds, ynyl, yngg, yngj, ynse
+- 云南卫视 (ynws)
+- 云南都市 (ynds)
+- 云南娱乐 (ynyl)
+- 云南公共 (yngg)
+- 云南国际 (yngj)
+- 云南少儿 (ynse)
 
 ## 功能特性
 
@@ -53,61 +159,97 @@
 https://your-domain.com/api/{region}?id={channel_id}
 
 # 示例
-https://your-domain.com/api/yunnan?id=ynws  # 云南卫视
-https://your-domain.com/api/beijing?id=bjws # 北京卫视
-https://your-domain.com/api/4k?id=btv4k    # 北京卫视4K
+https://your-domain.com/api/yunnan?id=ynws      # 云南卫视
+https://your-domain.com/api/beijing?id=bjws     # 北京卫视
+https://your-domain.com/api/4k?id=btv4k         # 北京卫视4K
+https://your-domain.com/api/sjz?id=list         # 石家庄频道动态列表
 ```
-
-## 支持频道（详细）
-
-| ID | 频道名 |
-|----|--------|
-| ynws | 云南卫视 |
-| ynds | 云南都市 |
-| ynyl | 云南娱乐 |
-| yngg | 云南公共 |
-| yngj | 云南国际 |
-| ynse | 云南少儿 |
-
-## 本地开发
-
-```bash
-# 安装依赖
-npm install
-
-# 启动开发服务器
-npm run dev
-
-# 访问
-http://localhost:3000
-```
-
-## API使用
 
 ### 获取M3U8播放列表
 
 ```
-GET /api/yunnan?id={channel_id}
+GET /api/{region}?id={channel_id}
 ```
 
 示例:
 ```
 # 云南卫视
-http://your-domain.com/api/yunnan?id=ynws
+https://your-domain.com/api/yunnan?id=ynws
 
-# 云南都市
-http://your-domain.com/api/yunnan?id=ynds
+# 北京卫视4K
+https://your-domain.com/api/4k?id=btv4k
+
+# 北京卫视
+https://your-domain.com/api/beijing?id=bjws
+
+# 石家庄频道列表（动态）
+https://your-domain.com/api/sjz?id=list
 ```
 
 ### 播放器使用
 
 ```m3u
 #EXTM3U
+#EXTINF:-1,北京卫视4K
+https://your-domain.com/api/4k?id=btv4k
+#EXTINF:-1,北京卫视
+https://your-domain.com/api/beijing?id=bjws
 #EXTINF:-1,云南卫视
-http://your-domain.com/api/yunnan?id=ynws
-#EXTINF:-1,云南都市
-http://your-domain.com/api/yunnan?id=ynds
+https://your-domain.com/api/yunnan?id=ynws
+#EXTINF:-1,石家庄频道（动态）
+https://your-domain.com/api/sjz?id=list
 ```
+ 
+## 本地开发
+
+如需在本地调试和开发项目，请参考以下步骤（适用于 Node 18+）：
+
+1. 安装依赖
+
+```bash
+npm install
+```
+
+2. 本地开发（热重载）
+
+```bash
+npm run dev
+```
+
+3. 生产构建与启动
+
+```bash
+npm run build
+npm run start
+```
+
+访问: http://localhost:3000
+
+更多本地开发注意事项请参见 `DEPLOY.md`。
+
+## 本地 Docker 部署
+
+项目包含用于本地容器化测试的 `Dockerfile`（详见 `DEPLOY.md`）。快速开始：
+
+1. 构建镜像
+
+```bash
+docker build -t iptv-edgeone .
+```
+
+2. 运行容器（在本地映射为 3000 端口）
+
+```bash
+docker run -d \
+  --name iptv-edgeone \
+  -p 3000:3000 \
+  --restart unless-stopped \
+  iptv-edgeone
+```
+
+容器启动后同样访问: http://localhost:3000
+
+参见 `DEPLOY.md` 以获取 EdgeOne 兼容性、环境变量和调试提示。
 
 ## 部署到EdgeOne Pages
 
@@ -139,33 +281,39 @@ http://your-domain.com/api/yunnan?id=ynds
 ## 项目结构
 
 ```
-yunnan-tv-edgeone/
+iptv-edgeone/
 ├── app/
 │   ├── api/
-│   │   ├── config.ts          # 配置文件
-│   │   └── yunnan/
-│   │       └── route.ts        # API路由(Edge Runtime)
-│   ├── layout.tsx              # 布局组件
-│   └── page.tsx                # 首页
+│   │   ├── 4k/           # 4K频道API
+│   │   ├── beijing/      # 北京台API
+│   │   ├── hebei/        # 河北台API
+│   │   ├── henan/        # 河南台API
+│   │   ├── jiangsu/      # 江苏台API
+│   │   ├── shandong/     # 山东台API
+│   │   ├── shaanxi/      # 陕西台API
+│   │   ├── shenzhen/     # 深圳台API
+│   │   ├── sjz/          # 石家庄台API（动态）
+│   │   ├── yunnan/       # 云南台API
+│   │   └── utils/        # 通用工具函数（如getRealHost）
+│   ├── layout.tsx        # 全局布局
+│   └── page.tsx          # 首页
 ├── package.json
 ├── next.config.js
 ├── tsconfig.json
-└── README.md
+├── README.md
+└── ...
 ```
-
-## 技术栈
-
-- **Next.js 14** - React框架
-- **Edge Runtime** - 边缘计算运行时
-- **TypeScript** - 类型安全
-- **腾讯云EdgeOne Pages** - 部署平台
 
 ## 原理说明
 
-1. **获取流信息**: 调用云南TV API获取认证参数
-2. **M3U8代理**: 获取原始M3U8并替换TS路径
-3. **TS代理**: 通过Edge Function代理TS文件请求
-4. **防盗链绕过**: 添加正确的Referer和User-Agent
+1. **多地区API分区**：每个地区/频道有独立API目录，便于维护和扩展，上游源获取接口基本都来源于各台官方。
+2. **getRealHost工具**：所有API统一通过`getRealHost`获取真实域名，兼容EdgeOne内部转发。
+3. **M3U8代理**：API返回标准M3U8播放列表，所有频道URL均为本服务代理，支持VLC等播放器直接播放。
+4. **TS文件代理**：如有TS分片，API自动代理并处理防盗链、Referer等。
+5. **动态频道支持**：如石家庄频道，API实时抓取上游数据，频道列表随源站变化自动同步。
+6. **无状态部署**：所有逻辑基于Edge Runtime，无需本地存储，支持无服务器部署。
+7. **TypeScript类型安全**：全项目TypeScript开发，类型安全、易维护。
+8. **一键部署**：支持直接部署到腾讯云EdgeOne Pages，自动适配云端环境。
 
 ## 性能优化
 
