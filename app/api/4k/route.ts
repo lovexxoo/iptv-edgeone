@@ -190,7 +190,8 @@ function findPlayUrl(dataArr: any, targetId: number): string | null {
 
 /**
  * 生成签名（AES-256-ECB加密）
- * Edge Runtime中使用Web Crypto API
+ * Edge Runtime中使用Web Crypto API实现真正的ECB模式
+ * ECB模式 = 对每个16字节块独立加密（不使用IV）
  */
 async function makeSign(url: string, params: string, timeMillis: number, key: string): Promise<string> {
   const payload = {
@@ -215,11 +216,8 @@ async function makeSign(url: string, params: string, timeMillis: number, key: st
       ['encrypt']
     );
 
-    // AES-256-ECB加密 (使用CBC模式模拟ECB)
-    const iv = new Uint8Array(16); // ECB不需要IV，用全0的IV
+    // Prepare data with PKCS7 padding
     const data = encoder.encode(json);
-
-    // Padding to 16 bytes boundary (PKCS7)
     const blockSize = 16;
     const paddingLength = blockSize - (data.length % blockSize);
     const paddedData = new Uint8Array(data.length + paddingLength);
@@ -228,17 +226,41 @@ async function makeSign(url: string, params: string, timeMillis: number, key: st
       paddedData[i] = paddingLength;
     }
 
-    const encrypted = await crypto.subtle.encrypt(
-      { name: 'AES-CBC', iv: iv },
-      cryptoKey,
-      paddedData
-    );
+    // Implement ECB by encrypting each block independently
+    const numBlocks = paddedData.length / blockSize;
+    const encryptedBlocks: Uint8Array[] = [];
+
+    for (let i = 0; i < numBlocks; i++) {
+      const block = paddedData.slice(i * blockSize, (i + 1) * blockSize);
+      
+      // Use the block itself as IV for ECB simulation
+      // Actually, for true ECB we need to encrypt each block independently
+      // We use a fixed zero IV and encrypt each block separately
+      const zeroIV = new Uint8Array(blockSize);
+      
+      const encryptedBlock = await crypto.subtle.encrypt(
+        { name: 'AES-CBC', iv: zeroIV },
+        cryptoKey,
+        block
+      );
+      
+      // Take only the first 16 bytes (the encrypted block, discard padding)
+      encryptedBlocks.push(new Uint8Array(encryptedBlock).slice(0, blockSize));
+    }
+
+    // Concatenate all encrypted blocks
+    const totalLength = encryptedBlocks.reduce((sum, block) => sum + block.length, 0);
+    const encrypted = new Uint8Array(totalLength);
+    let offset = 0;
+    for (const block of encryptedBlocks) {
+      encrypted.set(block, offset);
+      offset += block.length;
+    }
 
     // Base64 encode
-    const bytes = new Uint8Array(encrypted);
     let binary = '';
-    for (let i = 0; i < bytes.length; i++) {
-      binary += String.fromCharCode(bytes[i]);
+    for (let i = 0; i < encrypted.length; i++) {
+      binary += String.fromCharCode(encrypted[i]);
     }
     const base64 = btoa(binary);
     const result = base64.replace(/[\r\n]/g, '');
