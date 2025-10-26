@@ -50,12 +50,62 @@ export async function GET(request: NextRequest) {
   const id = searchParams.get('id') || '4';
 
   if (id === 'list') {
-    return new NextResponse(
-      'Please check the API for available channel IDs\nAPI: http://mapi.sjzntv.cn/api/v1/channel.php',
-      {
-        headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+    try {
+      // 获取频道列表
+      const response = await fetch(API_URL);
+      if (!response.ok) {
+        return new NextResponse('Failed to fetch channel list', {
+          status: 500,
+          headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+        });
       }
-    );
+
+      const data = await response.json();
+      if (!Array.isArray(data)) {
+        return new NextResponse('Invalid channel list format', {
+          status: 500,
+          headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+        });
+      }
+
+      // 构建M3U8播放列表
+      let m3u8Content = '#EXTM3U\n';
+      
+      const url = new URL(request.url);
+      let baseHost = url.host;
+      
+      if (baseHost.includes('localhost') || baseHost.includes('pages-scf') || baseHost.includes('qcloudteo.com')) {
+        const referer = request.headers.get('referer');
+        if (referer) {
+          try {
+            const refererUrl = new URL(referer);
+            baseHost = refererUrl.host;
+          } catch {}
+        }
+      }
+      
+      const baseUrl = `${url.protocol}//${baseHost}/api/sjz`;
+
+      for (const channel of data) {
+        if (channel.id && channel.name) {
+          m3u8Content += `#EXTINF:-1,${channel.name}\n`;
+          m3u8Content += `${baseUrl}?id=${channel.id}\n`;
+        }
+      }
+
+      return new NextResponse(m3u8Content, {
+        headers: {
+          'Content-Type': 'application/vnd.apple.mpegurl',
+          'Cache-Control': 'public, max-age=3600',
+        },
+      });
+    } catch (error) {
+      console.error('List generation error:', error);
+      return new NextResponse('Failed to generate channel list', {
+        status: 500,
+        headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+      });
+    }
   }
 
   // 获取播放地址
