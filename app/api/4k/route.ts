@@ -280,6 +280,20 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const id = searchParams.get('id') || 'btv4k';
 
+  // 调试：添加版本标识
+  console.log(`[v2.1-DEBUG] Request for channel: ${id}, timestamp: ${new Date().toISOString()}`);
+
+  // 调试端点
+  if (id === 'debug') {
+    return NextResponse.json({
+      version: 'v2.1-DEBUG',
+      timestamp: new Date().toISOString(),
+      channelMap: Object.keys(CHANNEL_MAP),
+      cacheAvailable: typeof cache !== 'undefined',
+      cryptoAvailable: typeof crypto !== 'undefined' && typeof crypto.subtle !== 'undefined',
+    });
+  }
+
     // 如果是list请求，返回频道列表
   if (id === 'list') {
     let m3u8Content = '#EXTM3U\n';
