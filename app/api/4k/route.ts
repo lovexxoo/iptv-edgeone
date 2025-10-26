@@ -49,16 +49,13 @@ async function getToken(): Promise<string | null> {
   // 检查缓存
   const cached = cache.get('visitor_token');
   if (cached && cached.expires > Date.now()) {
-    console.log('[getToken] Using cached token');
     return cached.value;
   }
 
   const timeMillis = Date.now();
-  
-  try {
-    const sign = await makeSign(API_URL1, '', timeMillis, AES_KEY);
-    console.log(`[getToken] Sign generated, length: ${sign.length}`);
+  const sign = await makeSign(API_URL1, '', timeMillis, AES_KEY);
 
+  try {
     const response = await fetch(API_URL1, {
       method: 'POST',
       headers: {
@@ -68,27 +65,15 @@ async function getToken(): Promise<string | null> {
       },
     });
 
-    console.log(`[getToken] Response status: ${response.status}`);
-    
-    if (!response.ok) {
-      const text = await response.text();
-      console.error('[getToken] Response not OK:', text.substring(0, 200));
-      return null;
-    }
+    if (!response.ok) return null;
 
     const data = await response.json();
-    console.log('[getToken] Response data:', JSON.stringify(data).substring(0, 200));
-    
-    if (!data?.success || !data?.data?.token) {
-      console.error('[getToken] Invalid response structure');
-      return null;
-    }
+    if (!data?.success || !data?.data?.token) return null;
 
     const token = data.data.token;
     // 缓存24小时
     cache.set('visitor_token', { value: token, expires: Date.now() + 86400000 });
 
-    console.log(`[getToken] Token obtained, length: ${token.length}`);
     return token;
   } catch (error) {
     console.error('Get token error:', error);
@@ -149,42 +134,17 @@ async function getColumnData(token: string): Promise<any> {
  */
 function findPlayUrl(dataArr: any, targetId: number): string | null {
   if (!dataArr?.data || !Array.isArray(dataArr.data)) {
-    console.error('Invalid data structure: data is not an array');
     return null;
   }
 
-  console.log(`Searching through ${dataArr.data.length} items for ID ${targetId}`);
-
   // 遍历数据数组查找目标频道
-  for (let i = 0; i < dataArr.data.length; i++) {
-    const item = dataArr.data[i];
-    
-    // 调试：打印每个项的结构（只打印前3个）
-    if (i < 3) {
-      console.log(`Item ${i} structure:`, JSON.stringify(item, null, 2).substring(0, 300));
-    }
-    
-    // 检查多种可能的数据结构
-    // 情况1: item.mediaAsset.id 和 item.mediaAsset.url
+  for (const item of dataArr.data) {
+    // 检查 item.mediaAsset.id 和 item.mediaAsset.url
     if (item?.mediaAsset?.id === targetId && item?.mediaAsset?.url) {
-      console.log(`Found URL in mediaAsset (case 1): ${item.mediaAsset.url}`);
       return item.mediaAsset.url;
-    }
-    
-    // 情况2: item.id 和 item.url (直接在item层级)
-    if (item?.id === targetId && item?.url) {
-      console.log(`Found URL in item directly (case 2): ${item.url}`);
-      return item.url;
-    }
-    
-    // 情况3: 嵌套在其他结构中
-    if (item?.data?.mediaAsset?.id === targetId && item?.data?.mediaAsset?.url) {
-      console.log(`Found URL in nested data.mediaAsset (case 3): ${item.data.mediaAsset.url}`);
-      return item.data.mediaAsset.url;
     }
   }
 
-  console.error(`Target ID ${targetId} not found in any items`);
   return null;
 }
 
@@ -201,76 +161,64 @@ async function makeSign(url: string, params: string, timeMillis: number, key: st
   };
 
   const json = JSON.stringify(payload);
-  console.log(`[makeSign] Payload: ${json}`);
 
-  try {
-    // Convert key to CryptoKey
-    const encoder = new TextEncoder();
-    const keyData = encoder.encode(key);
+  // Convert key to CryptoKey
+  const encoder = new TextEncoder();
+  const keyData = encoder.encode(key);
 
-    const cryptoKey = await crypto.subtle.importKey(
-      'raw',
-      keyData,
-      { name: 'AES-CBC', length: 256 },
-      false,
-      ['encrypt']
-    );
+  const cryptoKey = await crypto.subtle.importKey(
+    'raw',
+    keyData,
+    { name: 'AES-CBC', length: 256 },
+    false,
+    ['encrypt']
+  );
 
-    // Prepare data with PKCS7 padding
-    const data = encoder.encode(json);
-    const blockSize = 16;
-    const paddingLength = blockSize - (data.length % blockSize);
-    const paddedData = new Uint8Array(data.length + paddingLength);
-    paddedData.set(data);
-    for (let i = data.length; i < paddedData.length; i++) {
-      paddedData[i] = paddingLength;
-    }
-
-    // Implement ECB by encrypting each block independently
-    const numBlocks = paddedData.length / blockSize;
-    const encryptedBlocks: Uint8Array[] = [];
-
-    for (let i = 0; i < numBlocks; i++) {
-      const block = paddedData.slice(i * blockSize, (i + 1) * blockSize);
-      
-      // Use the block itself as IV for ECB simulation
-      // Actually, for true ECB we need to encrypt each block independently
-      // We use a fixed zero IV and encrypt each block separately
-      const zeroIV = new Uint8Array(blockSize);
-      
-      const encryptedBlock = await crypto.subtle.encrypt(
-        { name: 'AES-CBC', iv: zeroIV },
-        cryptoKey,
-        block
-      );
-      
-      // Take only the first 16 bytes (the encrypted block, discard padding)
-      encryptedBlocks.push(new Uint8Array(encryptedBlock).slice(0, blockSize));
-    }
-
-    // Concatenate all encrypted blocks
-    const totalLength = encryptedBlocks.reduce((sum, block) => sum + block.length, 0);
-    const encrypted = new Uint8Array(totalLength);
-    let offset = 0;
-    for (const block of encryptedBlocks) {
-      encrypted.set(block, offset);
-      offset += block.length;
-    }
-
-    // Base64 encode
-    let binary = '';
-    for (let i = 0; i < encrypted.length; i++) {
-      binary += String.fromCharCode(encrypted[i]);
-    }
-    const base64 = btoa(binary);
-    const result = base64.replace(/[\r\n]/g, '');
-    
-    console.log(`[makeSign] Encrypted sign length: ${result.length}`);
-    return result;
-  } catch (error) {
-    console.error('[makeSign] Encryption error:', error);
-    throw error;
+  // Prepare data with PKCS7 padding
+  const data = encoder.encode(json);
+  const blockSize = 16;
+  const paddingLength = blockSize - (data.length % blockSize);
+  const paddedData = new Uint8Array(data.length + paddingLength);
+  paddedData.set(data);
+  for (let i = data.length; i < paddedData.length; i++) {
+    paddedData[i] = paddingLength;
   }
+
+  // Implement ECB by encrypting each block independently
+  const numBlocks = paddedData.length / blockSize;
+  const encryptedBlocks: Uint8Array[] = [];
+
+  for (let i = 0; i < numBlocks; i++) {
+    const block = paddedData.slice(i * blockSize, (i + 1) * blockSize);
+    
+    // Use zero IV for each block to simulate ECB
+    const zeroIV = new Uint8Array(blockSize);
+    
+    const encryptedBlock = await crypto.subtle.encrypt(
+      { name: 'AES-CBC', iv: zeroIV },
+      cryptoKey,
+      block
+    );
+    
+    // Take only the first 16 bytes (the encrypted block)
+    encryptedBlocks.push(new Uint8Array(encryptedBlock).slice(0, blockSize));
+  }
+
+  // Concatenate all encrypted blocks
+  const totalLength = encryptedBlocks.reduce((sum, block) => sum + block.length, 0);
+  const encrypted = new Uint8Array(totalLength);
+  let offset = 0;
+  for (const block of encryptedBlocks) {
+    encrypted.set(block, offset);
+    offset += block.length;
+  }
+
+  // Base64 encode
+  let binary = '';
+  for (let i = 0; i < encrypted.length; i++) {
+    binary += String.fromCharCode(encrypted[i]);
+  }
+  return btoa(binary).replace(/[\r\n]/g, '');
 }
 
 /**
@@ -278,45 +226,24 @@ async function makeSign(url: string, params: string, timeMillis: number, key: st
  */
 async function getPlayUrl(id: string): Promise<string | null> {
   if (!CHANNEL_MAP[id]) {
-    console.error(`Channel ID not found in map: ${id}`);
     return null;
   }
 
   // 获取token
   const token = await getToken();
   if (!token) {
-    console.error('Failed to get token');
     return null;
   }
 
   // 获取频道列表数据
   const dataArr = await getColumnData(token);
   if (!dataArr) {
-    console.error('Failed to get column data');
     return null;
   }
 
-  // 调试：打印数据结构
-  console.log('Column data structure:', JSON.stringify(dataArr).substring(0, 500));
-  console.log('Data array length:', dataArr?.data?.length);
-
   // 查找播放地址
   const targetId = CHANNEL_MAP[id];
-  console.log(`Looking for channel ID: ${targetId} (${id})`);
-  
-  const playUrl = findPlayUrl(dataArr, targetId);
-  
-  if (!playUrl) {
-    console.error(`Play URL not found for channel ${id} (ID: ${targetId})`);
-    // 打印前几个数据项用于调试
-    if (dataArr?.data && Array.isArray(dataArr.data)) {
-      console.log('Sample data items:', JSON.stringify(dataArr.data.slice(0, 2), null, 2));
-    }
-  } else {
-    console.log(`Found play URL for ${id}: ${playUrl.substring(0, 100)}...`);
-  }
-
-  return playUrl;
+  return findPlayUrl(dataArr, targetId);
 }
 
 /**
@@ -326,84 +253,7 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const id = searchParams.get('id') || 'btv4k';
 
-  // 调试：添加版本标识
-  console.log(`[v2.1-DEBUG] Request for channel: ${id}, timestamp: ${new Date().toISOString()}`);
-
-  // 调试端点
-  if (id === 'debug') {
-    return NextResponse.json({
-      version: 'v2.1-DEBUG',
-      timestamp: new Date().toISOString(),
-      channelMap: Object.keys(CHANNEL_MAP),
-      cacheAvailable: typeof cache !== 'undefined',
-      cryptoAvailable: typeof crypto !== 'undefined' && typeof crypto.subtle !== 'undefined',
-    });
-  }
-
-  // 测试端点 - 详细调试信息
-  if (id.startsWith('test_')) {
-    const testId = id.replace('test_', '');
-    try {
-      console.log(`[TEST] Testing channel: ${testId}`);
-      const targetNum = CHANNEL_MAP[testId];
-      
-      if (!targetNum) {
-        return NextResponse.json({
-          error: 'Channel not in map',
-          channelId: testId,
-          availableChannels: Object.keys(CHANNEL_MAP),
-        });
-      }
-
-      const token = await getToken();
-      if (!token) {
-        return NextResponse.json({
-          error: 'Failed to get token',
-          channelId: testId,
-          targetNum,
-        });
-      }
-
-      const columnData = await getColumnData(token);
-      if (!columnData) {
-        return NextResponse.json({
-          error: 'Failed to get column data',
-          channelId: testId,
-          targetNum,
-          tokenLength: token?.length,
-        });
-      }
-
-      const playUrl = findPlayUrl(columnData, targetNum);
-      
-      return NextResponse.json({
-        success: playUrl !== null,
-        channelId: testId,
-        targetNum,
-        playUrl,
-        dataStructure: {
-          hasData: !!columnData?.data,
-          isArray: Array.isArray(columnData?.data),
-          length: columnData?.data?.length,
-          firstItemKeys: columnData?.data?.[0] ? Object.keys(columnData.data[0]) : [],
-          firstItemMediaAsset: columnData?.data?.[0]?.mediaAsset ? {
-            hasId: 'id' in columnData.data[0].mediaAsset,
-            hasUrl: 'url' in columnData.data[0].mediaAsset,
-            id: columnData.data[0].mediaAsset.id,
-          } : null,
-        },
-      });
-    } catch (error: any) {
-      return NextResponse.json({
-        error: 'Exception occurred',
-        message: error.message,
-        stack: error.stack,
-        channelId: testId,
-      });
-    }
-  }
-
-    // 如果是list请求，返回频道列表
+  // 如果是list请求，返回频道列表
   if (id === 'list') {
     let m3u8Content = '#EXTM3U\n';
     
