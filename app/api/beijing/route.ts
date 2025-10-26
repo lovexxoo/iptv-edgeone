@@ -6,6 +6,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { md5 } from '../utils/crypto';
+import { getRealHost } from '../utils/url';
 
 export const runtime = 'edge';
 
@@ -111,23 +112,10 @@ export async function GET(request: NextRequest) {
   if (id === 'list') {
     let m3u8Content = '#EXTM3U\n';
     
-    // EdgeOne Pages的request.url是内部地址(localhost:9000)
-    // 需要智能构建正确的baseUrl
-    const url = new URL(request.url);
-    let baseHost = url.host;
-    
-    // 如果是EdgeOne内部域名，尝试从Referer获取真实域名
-    if (baseHost.includes('localhost') || baseHost.includes('pages-scf') || baseHost.includes('qcloudteo.com')) {
-      const referer = request.headers.get('referer');
-      if (referer) {
-        try {
-          const refererUrl = new URL(referer);
-          baseHost = refererUrl.host;
-        } catch {}
-      }
-    }
-    
-    const baseUrl = `${url.protocol}//${baseHost}/api/beijing`;
+    // 获取真实域名
+    const host = getRealHost(request);
+    const protocol = request.url.startsWith('https') ? 'https' : 'http';
+    const baseUrl = `${protocol}://${host}/api/beijing`;
 
     for (const [cid, _] of Object.entries(CHANNEL_MAP)) {
       const channelName = CHANNEL_NAMES[cid];

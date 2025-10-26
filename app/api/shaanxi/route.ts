@@ -5,6 +5,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { getRealHost } from '../utils/url';
 
 export const runtime = 'edge';
 
@@ -74,20 +75,10 @@ export async function GET(request: NextRequest) {
   if (id === 'list') {
     let m3u8Content = '#EXTM3U\n';
     
-    const url = new URL(request.url);
-    let baseHost = url.host;
-    
-    if (baseHost.includes('localhost') || baseHost.includes('pages-scf') || baseHost.includes('qcloudteo.com')) {
-      const referer = request.headers.get('referer');
-      if (referer) {
-        try {
-          const refererUrl = new URL(referer);
-          baseHost = refererUrl.host;
-        } catch {}
-      }
-    }
-    
-    const baseUrl = `${url.protocol}//${baseHost}/api/shaanxi`;
+    // 获取真实域名
+    const host = getRealHost(request);
+    const protocol = request.url.startsWith('https') ? 'https' : 'http';
+    const baseUrl = `${protocol}://${host}/api/shaanxi`;
 
     for (const [cid, name] of Object.entries(TV_CHANNELS)) {
       m3u8Content += `#EXTINF:-1,${name}\n${baseUrl}?id=${cid}\n`;

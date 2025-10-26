@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getRealHost } from '../utils/url';
 
 export const runtime = 'edge';
 
@@ -134,8 +135,9 @@ export async function GET(request: NextRequest) {
   if (channelId === 'list') {
     let m3u8Content = '#EXTM3U\n';
     
-    const url = new URL(request.url);
-    const baseUrl = `${url.protocol}//${url.host}/api/yunnan`;
+    const host = getRealHost(request);
+    const protocol = request.url.startsWith('https') ? 'https' : 'http';
+    const baseUrl = `${protocol}://${host}/api/yunnan`;
 
     for (const [cid, name] of Object.entries(CHANNEL_MAP)) {
       m3u8Content += `#EXTINF:-1,云南${name}\n`;

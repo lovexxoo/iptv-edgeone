@@ -6,6 +6,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { md5, aesDecrypt } from '../utils/crypto';
+import { getRealHost } from '../utils/url';
 
 export const runtime = 'edge';
 
@@ -133,20 +134,10 @@ export async function GET(request: NextRequest) {
   if (id === 'list') {
     let m3u8Content = '#EXTM3U\n';
     
-    const url = new URL(request.url);
-    let baseHost = url.host;
-    
-    if (baseHost.includes('localhost') || baseHost.includes('pages-scf') || baseHost.includes('qcloudteo.com')) {
-      const referer = request.headers.get('referer');
-      if (referer) {
-        try {
-          const refererUrl = new URL(referer);
-          baseHost = refererUrl.host;
-        } catch {}
-      }
-    }
-    
-    const baseUrl = `${url.protocol}//${baseHost}/api/shandong`;
+    // 获取真实域名
+    const host = getRealHost(request);
+    const protocol = request.url.startsWith('https') ? 'https' : 'http';
+    const baseUrl = `${protocol}://${host}/api/shandong`;
 
     for (const [cid, _] of Object.entries(CHANNEL_MAP)) {
       const channelName = CHANNEL_NAMES[cid] || cid;

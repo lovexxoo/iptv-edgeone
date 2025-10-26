@@ -5,6 +5,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { getRealHost } from '../utils/url';
 
 export const runtime = 'edge';
 
@@ -71,20 +72,10 @@ export async function GET(request: NextRequest) {
       // 构建M3U8播放列表
       let m3u8Content = '#EXTM3U\n';
       
-      const url = new URL(request.url);
-      let baseHost = url.host;
-      
-      if (baseHost.includes('localhost') || baseHost.includes('pages-scf') || baseHost.includes('qcloudteo.com')) {
-        const referer = request.headers.get('referer');
-        if (referer) {
-          try {
-            const refererUrl = new URL(referer);
-            baseHost = refererUrl.host;
-          } catch {}
-        }
-      }
-      
-      const baseUrl = `${url.protocol}//${baseHost}/api/sjz`;
+      // 获取真实域名
+      const host = getRealHost(request);
+      const protocol = request.url.startsWith('https') ? 'https' : 'http';
+      const baseUrl = `${protocol}://${host}/api/sjz`;
 
       for (const channel of data) {
         if (channel.id && channel.name) {
