@@ -9,109 +9,177 @@ export default function Home() {
         <div style={{ border: '1px solid #ddd', padding: '15px', borderRadius: '8px' }}>
           <h2>🎬 4K超高清 (9个)</h2>
           <ul style={{ fontSize: '14px' }}>
-            <li>btv4k - 北京卫视4K</li>
-            <li>sh4k - 上海卫视4K</li>
-            <li>js4k - 江苏卫视4K</li>
-            <li>sz4k - 深圳卫视4K</li>
+            <li>北京卫视4K</li>
+            <li>上海卫视4K</li>
+            <li>江苏卫视4K</li>
+            <li>浙江卫视4K</li>
+            <li>山东卫视4K</li>
+            <li>湖南卫视4K</li>
+            <li>广东卫视4K</li>
+            <li>四川卫视4K</li>
+            <li>深圳卫视4K</li>
           </ul>
-          <code style={{ fontSize: '12px', background: '#f4f4f4', padding: '5px' }}>/api/4k?id=btv4k</code>
         </div>
 
         <div style={{ border: '1px solid #ddd', padding: '15px', borderRadius: '8px' }}>
           <h2>📺 北京TV (10个)</h2>
           <ul style={{ fontSize: '14px' }}>
-            <li>bjws - 北京卫视</li>
-            <li>bjws4k - 北京卫视4K</li>
-            <li>bjwy - BRTV文艺</li>
-            <li>bjjskj - BRTV纪实科教</li>
+            <li>北京卫视</li>
+            <li>BRTV文艺</li>
+            <li>BRTV纪实科教</li>
+            <li>BRTV影视</li>
+            <li>BRTV财经</li>
+            <li>BRTV生活</li>
+            <li>BRTV新闻</li>
+            <li>卡酷少儿</li>
+            <li>北京卫视4K</li>
+            <li>BRTV体育休闲</li>
           </ul>
-          <code style={{ fontSize: '12px', background: '#f4f4f4', padding: '5px' }}>/api/beijing?id=bjws</code>
         </div>
 
         <div style={{ border: '1px solid #ddd', padding: '15px', borderRadius: '8px' }}>
           <h2>📺 河南TV (17个)</h2>
           <ul style={{ fontSize: '14px' }}>
-            <li>hnws - 河南卫视</li>
-            <li>hnds - 河南都市</li>
-            <li>hnms - 河南民生</li>
-            <li>hmfz - 河南法治</li>
+            <li>河南卫视</li>
+            <li>河南都市</li>
+            <li>河南民生</li>
+            <li>河南法治</li>
+            <li>河南电视剧</li>
+            <li>河南新闻</li>
+            <li>欢腾购物</li>
+            <li>河南公共</li>
+            <li>河南乡村</li>
+            <li>河南国际</li>
+            <li>河南梨园</li>
+            <li>文物宝库</li>
+            <li>武术世界</li>
+            <li>睛彩中原</li>
+            <li>移动戏曲</li>
+            <li>象视界</li>
+            <li>国学频道</li>
           </ul>
-          <code style={{ fontSize: '12px', background: '#f4f4f4', padding: '5px' }}>/api/henan?id=hnws</code>
         </div>
 
         <div style={{ border: '1px solid #ddd', padding: '15px', borderRadius: '8px' }}>
           <h2>📺 河北TV (8个)</h2>
           <ul style={{ fontSize: '14px' }}>
-            <li>hbws - 河北卫视</li>
-            <li>hbjj - 经济生活</li>
-            <li>hbds - 河北都市</li>
-            <li>hbys - 河北影视剧</li>
+            <li>河北卫视</li>
+            <li>经济生活</li>
+            <li>三农频道</li>
+            <li>河北都市</li>
+            <li>河北影视剧</li>
+            <li>少儿科教</li>
+            <li>文旅·公共</li>
+            <li>三佳购物</li>
           </ul>
-          <code style={{ fontSize: '12px', background: '#f4f4f4', padding: '5px' }}>/api/hebei?id=hbws</code>
         </div>
 
         <div style={{ border: '1px solid #ddd', padding: '15px', borderRadius: '8px' }}>
           <h2>📺 江苏TV (10个)</h2>
           <ul style={{ fontSize: '14px' }}>
-            <li>jsws - 江苏卫视</li>
-            <li>jsws4k - 江苏卫视4K</li>
-            <li>jscs - 江苏城市</li>
-            <li>jszy - 江苏综艺</li>
+            <li>江苏卫视</li>
+            <li>江苏卫视4K</li>
+            <li>江苏城市</li>
+            <li>江苏综艺</li>
+            <li>江苏影视</li>
+            <li>江苏新闻</li>
+            <li>江苏教育</li>
+            <li>体育休闲</li>
+            <li>优漫卡通</li>
+            <li>江苏国际</li>
           </ul>
-          <code style={{ fontSize: '12px', background: '#f4f4f4', padding: '5px' }}>/api/jiangsu?id=jsws</code>
         </div>
 
         <div style={{ border: '1px solid #ddd', padding: '15px', borderRadius: '8px' }}>
           <h2>📺 山东TV (26个)</h2>
           <ul style={{ fontSize: '14px' }}>
-            <li>sdws - 山东卫视</li>
-            <li>xwpd - 新闻频道</li>
-            <li>qlpd - 齐鲁频道</li>
-            <li>jndst - 济南台</li>
+            <li>山东卫视</li>
+            <li>新闻频道</li>
+            <li>齐鲁频道</li>
+            <li>体育休闲频道</li>
+            <li>生活频道</li>
+            <li>综艺频道</li>
+            <li>文旅频道</li>
+            <li>农科频道</li>
+            <li>少儿频道</li>
+            <li>济南台</li>
+            <li>淄博台</li>
+            <li>枣庄台</li>
+            <li>东营台</li>
+            <li>烟台台</li>
+            <li>潍坊台</li>
+            <li>泰安台</li>
+            <li>威海台</li>
+            <li>日照台</li>
+            <li>临沂台</li>
+            <li>德州台</li>
+            <li>聊城台</li>
+            <li>滨州台</li>
+            <li>菏泽台</li>
+            <li>济宁台</li>
+            <li>莱芜台</li>
+            <li>章丘台</li>
           </ul>
-          <code style={{ fontSize: '12px', background: '#f4f4f4', padding: '5px' }}>/api/shandong?id=sdws</code>
         </div>
 
         <div style={{ border: '1px solid #ddd', padding: '15px', borderRadius: '8px' }}>
-          <h2>📺 陕西TV</h2>
+          <h2>📺 陕西TV (17个)</h2>
           <ul style={{ fontSize: '14px' }}>
-            <li>1131 - 陕西卫视</li>
-            <li>1127 - 新闻资讯</li>
-            <li>2134 - 新闻广播</li>
-            <li>... + 广播频道</li>
+            <li>农林卫视</li>
+            <li>新闻资讯</li>
+            <li>都市青春</li>
+            <li>银龄频道</li>
+            <li>秦腔频道</li>
+            <li>陕西卫视</li>
+            <li>体育休闲</li>
+            <li>乐家购物</li>
+            <li>移动电视</li>
+            <li>新闻广播</li>
+            <li>汽车调频</li>
+            <li>交通广播</li>
+            <li>音乐广播</li>
+            <li>都市广播</li>
+            <li>青少广播</li>
+            <li>戏曲广播</li>
+            <li>农村广播</li>
           </ul>
-          <code style={{ fontSize: '12px', background: '#f4f4f4', padding: '5px' }}>/api/shaanxi?id=1131</code>
         </div>
 
         <div style={{ border: '1px solid #ddd', padding: '15px', borderRadius: '8px' }}>
           <h2>📺 深圳TV (11个)</h2>
           <ul style={{ fontSize: '14px' }}>
-            <li>szws4k - 深圳卫视4K</li>
-            <li>szws - 深圳卫视</li>
-            <li>szds - 都市频道</li>
-            <li>szdsj - 电视剧频道</li>
+            <li>深圳卫视4K</li>
+            <li>深圳卫视</li>
+            <li>都市频道</li>
+            <li>电视剧频道</li>
+            <li>公共频道</li>
+            <li>财经频道</li>
+            <li>娱乐生活</li>
+            <li>少儿频道</li>
+            <li>移动电视</li>
+            <li>宜和购物频道</li>
+            <li>国际频道</li>
           </ul>
-          <code style={{ fontSize: '12px', background: '#f4f4f4', padding: '5px' }}>/api/shenzhen?id=szws</code>
         </div>
 
         <div style={{ border: '1px solid #ddd', padding: '15px', borderRadius: '8px' }}>
-          <h2>📺 石家庄TV</h2>
+          <h2>📺 石家庄TV (动态)</h2>
           <ul style={{ fontSize: '14px' }}>
-            <li>石家庄电视台</li>
-            <li>支持多个频道</li>
+            <li>频道列表实时同步API</li>
+            <li>请访问 id=list 获取最新频道</li>
           </ul>
-          <code style={{ fontSize: '12px', background: '#f4f4f4', padding: '5px' }}>/api/sjz?id=4</code>
         </div>
 
         <div style={{ border: '1px solid #ddd', padding: '15px', borderRadius: '8px' }}>
           <h2>📺 云南TV (6个)</h2>
           <ul style={{ fontSize: '14px' }}>
-            <li>ynws - 云南卫视</li>
-            <li>ynds - 云南都市</li>
-            <li>ynyl - 云南娱乐</li>
-            <li>yngg - 云南公共</li>
+            <li>云南卫视</li>
+            <li>云南都市</li>
+            <li>云南娱乐</li>
+            <li>云南公共</li>
+            <li>云南国际</li>
+            <li>云南少儿</li>
           </ul>
-          <code style={{ fontSize: '12px', background: '#f4f4f4', padding: '5px' }}>/api/yunnan?id=ynws</code>
         </div>
 
       </div>
@@ -141,7 +209,7 @@ vlc 4k.m3u8`}
 
       <footer style={{ marginTop: '40px', padding: '20px', borderTop: '1px solid #ddd', textAlign: 'center', color: '#666' }}>
         <p>Powered by Next.js 14 + Edge Runtime | Deployed on EdgeOne Pages</p>
-        <p><a href="https://github.com/vitter/iptv-edgeone" target="_blank" style={{ color: '#0070f3' }}>GitHub 仓库</a> | <a href="README.md" style={{ color: '#0070f3' }}>查看文档</a></p>
+        <p><a href="https://github.com/vitter/iptv-edgeone" target="_blank" style={{ color: '#0070f3' }}>GitHub 仓库</a> | <a href="https://raw.githubusercontent.com/vitter/iptv-edgeone/refs/heads/main/README.md" style={{ color: '#0070f3' }}>查看文档</a></p>
       </footer>
     </div>
   );
