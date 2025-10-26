@@ -294,6 +294,69 @@ export async function GET(request: NextRequest) {
     });
   }
 
+  // 测试端点 - 详细调试信息
+  if (id.startsWith('test_')) {
+    const testId = id.replace('test_', '');
+    try {
+      console.log(`[TEST] Testing channel: ${testId}`);
+      const targetNum = CHANNEL_MAP[testId];
+      
+      if (!targetNum) {
+        return NextResponse.json({
+          error: 'Channel not in map',
+          channelId: testId,
+          availableChannels: Object.keys(CHANNEL_MAP),
+        });
+      }
+
+      const token = await getToken();
+      if (!token) {
+        return NextResponse.json({
+          error: 'Failed to get token',
+          channelId: testId,
+          targetNum,
+        });
+      }
+
+      const columnData = await getColumnData(token);
+      if (!columnData) {
+        return NextResponse.json({
+          error: 'Failed to get column data',
+          channelId: testId,
+          targetNum,
+          tokenLength: token?.length,
+        });
+      }
+
+      const playUrl = findPlayUrl(columnData, targetNum);
+      
+      return NextResponse.json({
+        success: playUrl !== null,
+        channelId: testId,
+        targetNum,
+        playUrl,
+        dataStructure: {
+          hasData: !!columnData?.data,
+          isArray: Array.isArray(columnData?.data),
+          length: columnData?.data?.length,
+          firstItemKeys: columnData?.data?.[0] ? Object.keys(columnData.data[0]) : [],
+          firstItemMediaAsset: columnData?.data?.[0]?.mediaAsset ? {
+            hasId: 'id' in columnData.data[0].mediaAsset,
+            hasUrl: 'url' in columnData.data[0].mediaAsset,
+            id: columnData.data[0].mediaAsset.id,
+          } : null,
+        },
+      });
+    } catch (error: any) {
+      return NextResponse.json({
+        error: 'Exception occurred',
+        message: error.message,
+        stack: error.stack,
+        channelId: testId,
+      });
+    }
+  }
+
     // 如果是list请求，返回频道列表
   if (id === 'list') {
     let m3u8Content = '#EXTM3U\n';
