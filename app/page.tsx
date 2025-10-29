@@ -77,18 +77,50 @@ export default function Home() {
         </div>
 
         <div className={styles.card}>
-          <h2>📺 江苏TV (10个)</h2>
+          <h2>📺 江苏TV (50个)</h2>
           <ul className={styles.smallList}>
             <li>江苏卫视</li>
-            <li>江苏卫视4K</li>
             <li>江苏城市</li>
             <li>江苏综艺</li>
             <li>江苏影视</li>
             <li>江苏新闻</li>
             <li>江苏教育</li>
-            <li>体育休闲</li>
-            <li>优漫卡通</li>
+            <li>江苏体育休闲</li>
             <li>江苏国际</li>
+            <li>优漫卡通</li>
+            <li>南京新闻综合</li>
+            <li>六合新闻综合</li>
+            <li>无锡新闻综合</li>
+            <li>江阴新闻综合</li>
+            <li>徐州新闻综合</li>
+            <li>邳州综合</li>
+            <li>新沂新闻综合</li>
+            <li>贾汪新闻综合</li>
+            <li>铜山新闻综合</li>
+            <li>常州新闻</li>
+            <li>武进综合</li>
+            <li>苏州新闻综合</li>
+            <li>常熟综合</li>
+            <li>吴江新闻综合</li>
+            <li>张家港新闻综合</li>
+            <li>南通新闻综合</li>
+            <li>连云港新闻综合</li>
+            <li>东海新闻综合</li>
+            <li>淮安综合</li>
+            <li>盱眙综合</li>
+            <li>洪泽综合</li>
+            <li>盐城1套</li>
+            <li>响水综合</li>
+            <li>扬州新闻</li>
+            <li>邗江综合</li>
+            <li>镇江新闻综合</li>
+            <li>句容新闻综合</li>
+            <li>泰州新闻</li>
+            <li>靖江新闻</li>
+            <li>泰兴新闻综合</li>
+            <li>兴化新闻综合</li>
+            <li>宿迁综合</li>
+            <li>泗阳综合</li>
           </ul>
         </div>
 

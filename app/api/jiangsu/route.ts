@@ -1,226 +1,165 @@
-/**
- * 江苏TV API路由
- * 支持10个江苏广播电视台频道
- * Edge Runtime
- */
-
 import { NextRequest, NextResponse } from 'next/server';
-import { md5 } from '../utils/crypto';
 import { getRealHost } from '../utils/url';
 
-export const runtime = 'edge';
-
-// 频道映射表（extraId）
-const CHANNEL_MAP: { [key: string]: number } = {
-  'jsws': 670,    // 江苏卫视
-  'jsws4k': 676,  // 江苏卫视4K超高清
-  'jscs': 669,    // 江苏城市
-  'jszy': 663,    // 江苏综艺
-  'jsys': 664,    // 江苏影视
-  'jsxw': 668,    // 江苏新闻
-  'jsjy': 666,    // 江苏教育
-  'jsxx': 665,    // 体育休闲
-  'ymkt': 667,    // 优漫卡通
-  'jsgj': 671,    // 江苏国际
+// 频道映射（50个频道）
+const CHANNELS: Record<string, string> = {
+	jsws: 'jsws_live',   // 江苏卫视
+	jscs: 'jscs_live',   // 江苏城市
+	jszy: 'jszy_live',   // 江苏综艺
+	jsys: 'jsys_live',   // 江苏影视
+	jsxw: 'jsxw_live',   // 江苏新闻
+	jsjy: 'jsjy_live',   // 江苏教育
+	jsty: 'jsxx_live',   // 江苏体育休闲
+	jsgj: 'jsgj_live',   // 江苏国际
+	ymkt: 'ymkt_live',   // 优漫卡通
+	nj1: 'nanjing',      // 南京新闻综合
+	njlh: 'luhe',        // 六合新闻综合
+	wx1: 'wuxi',         // 无锡新闻综合
+	wxjy: 'jiangyin',    // 江阴新闻综合
+	xz1: 'xuzhou',       // 徐州新闻综合
+	xzpz: 'pizhou',      // 邳州综合
+	xzxy: 'xinyi',       // 新沂新闻综合
+	xzjw: 'jiawang',     // 贾汪新闻综合
+	xzts: 'tongshan',    // 铜山新闻综合
+	cz1: 'changzhou',    // 常州新闻
+	czwj: 'wujin',       // 武进综合
+	sz1: 'suzhou',       // 苏州新闻综合
+	szcs: 'changshu',    // 常熟综合
+	szwj: 'wujiang',     // 吴江新闻综合
+	szzjg: 'zhangjiagang', // 张家港新闻综合
+	nt1: 'nantong',      // 南通新闻综合
+	lyg1: 'lianyungang', // 连云港新闻综合
+	lygdh: 'donghai',    // 东海新闻综合
+	ha1: 'huaian',       // 淮安综合
+	haxy: 'xuyi',        // 盱眙综合
+	hahz: 'hongze',      // 洪泽综合
+	yc1: 'yancheng',     // 盐城1套
+	ycxs: 'xiangshui',   // 响水综合
+	yz1: 'yangzhou',     // 扬州新闻
+	yzhj: 'hanjiang',    // 邗江综合
+	zj1: 'zhenjiang',    // 镇江新闻综合
+	zjjr: 'jurong',      // 句容新闻综合
+	tz1: 'taizhou',      // 泰州新闻
+	tzjj: 'jingjiang',   // 靖江新闻
+	tztx: 'taixing',     // 泰兴新闻综合
+	tzxh: 'xinghua',     // 兴化新闻综合
+	sq1: 'suqian',       // 宿迁综合
+	sqsy: 'siyang',      // 泗阳综合
 };
 
-// 频道名称映射
-const CHANNEL_NAMES: { [key: string]: string } = {
-  'jsws': '江苏卫视',
-  'jsws4k': '江苏卫视4K',
-  'jscs': '江苏城市',
-  'jszy': '江苏综艺',
-  'jsys': '江苏影视',
-  'jsxw': '江苏新闻',
-  'jsjy': '江苏教育',
-  'jsxx': '体育休闲',
-  'ymkt': '优漫卡通',
-  'jsgj': '江苏国际',
-};
+const BASE_URL = 'https://zjcn-live-play.jstv.com/live.m3u8/';
 
-const APP_ID = '3b93c452b851431c8b3a076789ab1e14';
-const SECRET = '9dd4b0400f6e4d558f2b3497d734c2b4';
-const UUID = 'D5COmve6IQgwXvsJ4E3uxBstqxtDSCYW';
-
-/**
- * 转换时间戳
- */
-
-/**
- * 转换时间戳 - 原始正确算法
- */
-function transformTimestamp(timestamp: number): number {
-  const parts = [
-    255 & timestamp,
-    (timestamp & 65280) >> 8,
-    (timestamp & 16711680) >> 16,
-    (timestamp & 4278190080) >> 24,
-  ];
-
-  for (let i = 0; i < parts.length; i++) {
-    parts[i] = ((240 & parts[i]) ^ 240) | ((1 + (parts[i] & 15)) & 15);
-  }
-
-  return (
-    parts[3] |
-    (((parts[2] << 8) << 32) >> 32) |
-    (((parts[1] << 16) << 32) >> 32) |
-    (((parts[0] << 24) << 32) >> 32)
-  );
-}
-
-/**
- * 获取访问Token
- */
-async function getAccessToken(): Promise<string | null> {
-  const tm = Math.floor(Date.now() / 1000);
-  const signStr = `${SECRET}/JwtAuth/GetWebToken?AppID=${APP_ID}appId${APP_ID}platform41uuid${UUID}${tm}`;
-  const sign = md5(signStr);
-  const tt = transformTimestamp(tm);
-
-  const apiAuthUrl = `https://api-auth-lizhi.jstv.com/JwtAuth/GetWebToken?AppID=${APP_ID}&TT=${tt}&Sign=${sign}`;
-
-  const postData = {
-    platform: 41,
-    uuid: UUID,
-    appId: APP_ID,
-  };
-
-  try {
-    const response = await fetch(apiAuthUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Referer': 'https://live.jstv.com/',
-      },
-      body: JSON.stringify(postData),
-    });
-
-    if (!response.ok) return null;
-
-    const data = await response.json();
-    return data?.data?.accessToken || null;
-  } catch (error) {
-    console.error('Get access token error:', error);
-    return null;
-  }
-}
-
-/**
- * 获取播放地址
- */
-async function getStreamUrl(extraId: number, authorization: string): Promise<string | null> {
-  const playDataUrl = 'https://publish-lizhi.jstv.com/nav/7510';
-
-  try {
-    const response = await fetch(playDataUrl, {
-      headers: {
-        'Authorization': `Bearer ${authorization}`,
-      },
-    });
-
-    if (!response.ok) return null;
-
-    const data = await response.json();
-
-    // 查找对应频道
-    if (data?.data?.childList?.[0]?.articles) {
-      for (const article of data.data.childList[0].articles) {
-        // 注意: API返回的extraId是字符串,需要转换后比较
-        if (String(article.extraId) === String(extraId)) {
-          return article.extraJson?.url || null;
-        }
-      }
-    }
-
-    return null;
-  } catch (error) {
-    console.error('Get stream URL error:', error);
-    return null;
-  }
-}
-
-/**
- * GET请求处理
- */
 export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
-  const id = searchParams.get('id') || 'jsws';
+	const urlObj = new URL(request.url);
+	const searchParams = urlObj.searchParams;
+	const id = searchParams.get('id') || 'sq1';
 
-  // 如果是list请求，返回频道列表
-  if (id === 'list') {
-    let m3u8Content = '#EXTM3U\n';
-    
-    // 获取真实域名
-    const host = getRealHost(request);
-    const protocol = request.url.startsWith('https') ? 'https' : 'http';
-    const baseUrl = `${protocol}://${host}/api/jiangsu`;
+	// list 模式，输出所有频道 m3u8 代理列表
+		// 频道中文名映射
+		const CHANNEL_NAMES: Record<string, string> = {
+			jsws: '江苏卫视',
+			jscs: '江苏城市',
+			jszy: '江苏综艺',
+			jsys: '江苏影视',
+			jsxw: '江苏新闻',
+			jsjy: '江苏教育',
+			jsty: '江苏体育休闲',
+			jsgj: '江苏国际',
+			ymkt: '优漫卡通',
+			nj1: '南京新闻综合',
+			njlh: '六合新闻综合',
+			wx1: '无锡新闻综合',
+			wxjy: '江阴新闻综合',
+			xz1: '徐州新闻综合',
+			xzpz: '邳州综合',
+			xzxy: '新沂新闻综合',
+			xzjw: '贾汪新闻综合',
+			xzts: '铜山新闻综合',
+			cz1: '常州新闻',
+			czwj: '武进综合',
+			sz1: '苏州新闻综合',
+			szcs: '常熟综合',
+			szwj: '吴江新闻综合',
+			szzjg: '张家港新闻综合',
+			nt1: '南通新闻综合',
+			lyg1: '连云港新闻综合',
+			lygdh: '东海新闻综合',
+			ha1: '淮安综合',
+			haxy: '盱眙综合',
+			hahz: '洪泽综合',
+			yc1: '盐城1套',
+			ycxs: '响水综合',
+			yz1: '扬州新闻',
+			yzhj: '邗江综合',
+			zj1: '镇江新闻综合',
+			zjjr: '句容新闻综合',
+			tz1: '泰州新闻',
+			tzjj: '靖江新闻',
+			tztx: '泰兴新闻综合',
+			tzxh: '兴化新闻综合',
+			sq1: '宿迁综合',
+			sqsy: '泗阳综合',
+		};
 
-    for (const [cid, _] of Object.entries(CHANNEL_MAP)) {
-      const channelName = CHANNEL_NAMES[cid];
-      m3u8Content += `#EXTINF:-1,${channelName}\n`;
-      m3u8Content += `${baseUrl}?id=${cid}\n`;
-    }
+		if (id === 'list') {
+			let m3u = '#EXTM3U\n';
+			const host = getRealHost(request);
+			const protocol = urlObj.protocol.replace(':', '');
+			const baseUrl = `${protocol}://${host}/api/jiangsu`;
+			for (const [cid, cname] of Object.entries(CHANNELS)) {
+				const zhName = CHANNEL_NAMES[cid] || cid;
+				m3u += `#EXTINF:-1,${zhName}\n`;
+				m3u += `${baseUrl}?id=${cid}\n`;
+			}
+			return new NextResponse(m3u, {
+				status: 200,
+				headers: {
+					'Content-Type': 'application/vnd.apple.mpegurl; charset=utf-8',
+					'Cache-Control': 'public, max-age=3600',
+				},
+			});
+		}
 
-    return new NextResponse(m3u8Content, {
-      headers: {
-        'Content-Type': 'application/vnd.apple.mpegurl',
-        'Cache-Control': 'public, max-age=3600',
-      },
-    });
-  }
+	if (!CHANNELS[id]) {
+		return new NextResponse('Channel not found', {
+			status: 404,
+			headers: { 'Content-Type': 'text/plain' },
+		});
+	}
+	const channelName = CHANNELS[id];
+	const m3u8Url = `${BASE_URL}${channelName}.m3u8`;
 
-  // 检查频道是否存在
-  if (!CHANNEL_MAP[id]) {
-    return new NextResponse(
-      `Channel not found: ${id}\nAvailable channels: ${Object.keys(CHANNEL_MAP).join(', ')}`,
-      {
-        status: 404,
-        headers: { 'Content-Type': 'text/plain; charset=utf-8' },
-      }
-    );
-  }
+	// 拉取 m3u8 内容
+	let m3u8Content = '';
+	try {
+		const resp = await fetch(m3u8Url, {
+			headers: {
+				'Referer': 'https://api.chinaaudiovisual.cn/',
+			},
+			cache: 'no-store',
+		});
+		if (!resp.ok) {
+			return new NextResponse('M3U8 not found', {
+				status: 404,
+				headers: { 'Content-Type': 'text/plain' },
+			});
+		}
+		m3u8Content = await resp.text();
+	} catch (e) {
+		return new NextResponse('M3U8 fetch error', {
+			status: 502,
+			headers: { 'Content-Type': 'text/plain' },
+		});
+	}
 
-  const extraId = CHANNEL_MAP[id];
+	// 替换 ts 路径为完整 URL
+	m3u8Content = m3u8Content.replace(/(.*?\.ts)/gi, `${BASE_URL}$1`);
 
-  // 获取访问Token
-  const accessToken = await getAccessToken();
-  if (!accessToken) {
-    return new NextResponse('Failed to get access token', {
-      status: 500,
-      headers: { 'Content-Type': 'text/plain; charset=utf-8' },
-    });
-  }
-
-  // 获取播放地址
-  let streamUrl = await getStreamUrl(extraId, accessToken);
-
-  if (!streamUrl) {
-    return new NextResponse('Stream not found', {
-      status: 404,
-      headers: { 'Content-Type': 'text/plain; charset=utf-8' },
-    });
-  }
-
-  // 腾讯云防盗链参数
-  function addTxAuth(url: string): string {
-    const key = 'jstv2024';
-    const parsed = new URL(url);
-    const path = parsed.pathname;
-    // 1小时后过期
-    const expireTime = Math.floor(Date.now() / 1000) + 3600;
-    const txTime = expireTime.toString(16);
-    const txSecret = md5(key + path + txTime);
-    parsed.searchParams.set('txSecret', txSecret);
-    parsed.searchParams.set('txTime', txTime);
-    return parsed.toString();
-  }
-
-  // 只对 litchi-play-encrypted.jstv.com 域名加防盗链
-  if (/litchi-play-encrypted\.jstv\.com/.test(streamUrl)) {
-    streamUrl = addTxAuth(streamUrl);
-  }
-
-  // 302重定向到带防盗链参数的播放地址
-  return NextResponse.redirect(streamUrl, 302);
+	return new NextResponse(m3u8Content, {
+		status: 200,
+		headers: {
+			'Content-Type': 'application/vnd.apple.mpegurl',
+			'Cache-Control': 'no-cache',
+		},
+	});
 }
