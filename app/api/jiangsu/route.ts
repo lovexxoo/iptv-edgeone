@@ -193,7 +193,7 @@ export async function GET(request: NextRequest) {
   }
 
   // 获取播放地址
-  const streamUrl = await getStreamUrl(extraId, accessToken);
+  let streamUrl = await getStreamUrl(extraId, accessToken);
 
   if (!streamUrl) {
     return new NextResponse('Stream not found', {
@@ -202,6 +202,25 @@ export async function GET(request: NextRequest) {
     });
   }
 
-  // 302重定向到播放地址
+  // 腾讯云防盗链参数
+  function addTxAuth(url: string): string {
+    const key = 'jstv2024';
+    const parsed = new URL(url);
+    const path = parsed.pathname;
+    // 1小时后过期
+    const expireTime = Math.floor(Date.now() / 1000) + 3600;
+    const txTime = expireTime.toString(16);
+    const txSecret = md5(key + path + txTime);
+    parsed.searchParams.set('txSecret', txSecret);
+    parsed.searchParams.set('txTime', txTime);
+    return parsed.toString();
+  }
+
+  // 只对 litchi-play-encrypted.jstv.com 域名加防盗链
+  if (/litchi-play-encrypted\.jstv\.com/.test(streamUrl)) {
+    streamUrl = addTxAuth(streamUrl);
+  }
+
+  // 302重定向到带防盗链参数的播放地址
   return NextResponse.redirect(streamUrl, 302);
 }

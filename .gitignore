@@ -8,3 +8,5 @@ build/
 *.log
 .vercel
 .edgeone
+gdtv_cache/
+

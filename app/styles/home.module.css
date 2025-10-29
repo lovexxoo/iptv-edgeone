@@ -1,0 +1,51 @@
+/* Styles extracted from app/page.tsx inline styles to satisfy linter */
+.container {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.grid {
+  margin-top: 30px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+.card {
+  border: 1px solid #ddd;
+  padding: 15px;
+  border-radius: 8px;
+}
+.smallList {
+  font-size: 14px;
+}
+.note {
+  margin-top: 40px;
+  padding: 20px;
+  background: #f9f9f9;
+  border-radius: 8px;
+}
+.pre {
+  background: #fff;
+  padding: 10px;
+  border-radius: 4px;
+  margin: 10px 0;
+  overflow: auto;
+}
+.warningBox {
+  margin-top: 30px;
+  padding: 20px;
+  background: #fff3cd;
+  border-radius: 8px;
+  border-left: 4px solid #ffc107;
+}
+.footer {
+  margin-top: 40px;
+  padding: 20px;
+  border-top: 1px solid #ddd;
+  text-align: center;
+  color: #666;
+}
+.quickCardSmall {
+  color: #666;
+}
