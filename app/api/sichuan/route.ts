@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getRealHost } from '../utils/url';
 
 export const runtime = 'edge';
 
@@ -22,16 +23,14 @@ if (!globalAny.sctvAuthCache) globalAny.sctvAuthCache = new Map();
 const authCache: Map<string, { time: number; auth: string }> = globalAny.sctvAuthCache;
 const CACHE_EXPIRE = 3600;
 
-function getHost(req: NextRequest) {
-	return req.headers.get('x-forwarded-host') || req.headers.get('host') || '';
-}
+
 
 function getProtocol(req: NextRequest) {
 	return req.headers.get('x-forwarded-proto') || 'https';
 }
 
 function buildSelfUrl(req: NextRequest, path: string) {
-	return `${getProtocol(req)}://${getHost(req)}${path}`;
+	return `${getProtocol(req)}://${getRealHost(req)}${path}`;
 }
 
 async function fetchWithHeaders(url: string, headers: Record<string, string>, opts: RequestInit = {}) {

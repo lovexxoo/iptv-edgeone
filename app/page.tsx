@@ -302,6 +302,22 @@ export default function Home() {
         </div>
 
         <div className={styles.card}>
+          <h2>📺 四川TV (10个)</h2>
+          <ul className={styles.smallList}>
+            <li>四川卫视4K</li>
+            <li>四川卫视</li>
+            <li>四川经济</li>
+            <li>四川文化旅游</li>
+            <li>四川新闻</li>
+            <li>四川影视文艺</li>
+            <li>四川星空购物</li>
+            <li>四川妇女儿童</li>
+            <li>四川乡村</li>
+            <li>康巴卫视</li>
+          </ul>
+        </div>
+
+        <div className={styles.card}>
           <h2>📺 石家庄TV (动态)</h2>
           <ul className={styles.smallList}>
             <li>频道列表实时同步API</li>
