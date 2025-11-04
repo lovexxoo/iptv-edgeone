@@ -318,6 +318,29 @@ export default function Home() {
         </div>
 
         <div className={styles.card}>
+          <h2>📺 山西TV (17个)</h2>
+          <ul className={styles.smallList}>
+            <li>山西卫视</li>
+            <li>山西经济</li>
+            <li>山西影视</li>
+            <li>山西社会与法治</li>
+            <li>山西文体生活</li>
+            <li>山西黄河</li>
+            <li>太原新闻综合</li>
+            <li>大同新闻综合</li>
+            <li>阳泉新闻综合</li>
+            <li>长治新闻综合</li>
+            <li>晋城新闻综合</li>
+            <li>朔州新闻综合</li>
+            <li>晋中综合</li>
+            <li>运城新闻综合</li>
+            <li>忻州综合</li>
+            <li>临汾新闻综合</li>
+            <li>吕梁新闻综合</li>
+          </ul>
+        </div>
+
+        <div className={styles.card}>
           <h2>📺 石家庄TV (动态)</h2>
           <ul className={styles.smallList}>
             <li>频道列表实时同步API</li>

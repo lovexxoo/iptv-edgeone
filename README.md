@@ -269,6 +269,26 @@
 - 四川乡村 (scxc)
 - 康巴卫视 (kbws)
 
+### 📺 山西TV (17个)
+- 山西卫视 (sxws)
+- 山西经济 (sxjj)
+- 山西影视 (sxys)
+- 山西社会与法治 (sxshyfz)
+- 山西文体生活 (sxwtsh)
+- 山西黄河 (sxhh)
+- 太原新闻综合 (tyxwzh)
+- 大同新闻综合 (dtxwzh)
+- 阳泉新闻综合 (yqxwzh)
+- 长治新闻综合 (czxwzh)
+- 晋城新闻综合 (jcxwzh)
+- 朔州新闻综合 (szxwzh)
+- 晋中综合 (jzzh)
+- 运城新闻综合 (ycxwzh)
+- 忻州综合 (xzzh)
+- 临汾新闻综合 (lfxwzh)
+- 吕梁新闻综合 (llxwzh)
+
+
 ## 功能特性
 
 - ✅ 支持全国多地电视台频道

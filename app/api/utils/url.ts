@@ -31,7 +31,7 @@ export function getRealHost(request: Request): string {
   
   // 4. 从 Host header 获取（可能被EdgeOne修改）
   const hostHeader = request.headers.get('host');
-  if (hostHeader && !hostHeader.includes('localhost') && !hostHeader.includes('pages-scf') && !hostHeader.includes('qcloudteo.com')) {
+  if (hostHeader && !hostHeader.includes('pages-scf') && !hostHeader.includes('qcloudteo.com')) {
     return hostHeader;
   }
   
