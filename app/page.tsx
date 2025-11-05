@@ -411,6 +411,20 @@ export default function Home() {
           </ul>
         </div>
 
+        <div className={styles.card}>
+          <h2>📺 安徽TV (8个)</h2>
+          <ul className={styles.smallList}>
+            <li>安徽卫视</li>
+            <li>经济生活</li>
+            <li>综艺体育</li>
+            <li>影视频道</li>
+            <li>公共频道</li>
+            <li>农业科教</li>
+            <li>国际频道</li>
+            <li>移动电视</li>
+          </ul>
+        </div>
+
       </div>
 
       <div className={styles.note}>

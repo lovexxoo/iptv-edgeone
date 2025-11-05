@@ -320,6 +320,16 @@
 - 兰州音乐广播 (lzyygb) 
 - 兰州文艺广播 (lzwygb) 
 
+### 📺 安徽TV (8个) 🔗全链路代理
+- 安徽卫视 (ahws)
+- 经济生活 (ahjj)
+- 综艺体育 (ahzy)
+- 影视频道 (ahys)
+- 公共频道 (ahgg)
+- 农业科教 (ahnk)
+- 国际频道 (ahgj)
+- 移动电视 (ahyd)
+
 ### 📺 重庆TV (1个) 
 - 重庆新闻 (cqxw)
 
@@ -331,7 +341,7 @@
 - ✅ TS文件自动代理
 - ✅ XXTEA解密支持（吉林台）
 - ✅ 动态频道列表（吉林、石家庄等）
-- ✅ 全链路代理（四川、云南、甘肃、兰州等）
+- ✅ 全链路代理（四川、云南、甘肃、兰州、安徽等）
 - ✅ Edge Runtime运行
 - ✅ 无需服务器,直接部署到EdgeOne
 - ✅ 统一API接口设计
@@ -385,6 +395,9 @@ https://your-domain.com/api/gansu?id=gsws
 
 # 兰州文旅（全链路代理，支持TV和广播）
 https://your-domain.com/api/lanzhou?id=lzwl
+
+# 安徽卫视（全链路代理m3u8+ts）
+https://your-domain.com/api/anhui?id=ahws
 
 # 重庆新闻
 https://your-domain.com/api/chongqing?id=cqxw
@@ -495,6 +508,7 @@ iptv-edgeone/
 ├── app/
 │   ├── api/
 │   │   ├── 4k/           # 4K频道API
+│   │   ├── anhui/        # 安徽台API 全链路代理
 │   │   ├── beijing/      # 北京台API
 │   │   ├── chongqing/    # 重庆台API 
 │   │   ├── gansu/        # 甘肃台API 全链路代理
@@ -513,7 +527,7 @@ iptv-edgeone/
 │   │   ├── shenzhen/     # 深圳台API
 │   │   ├── sichuan/      # 四川台API 全链路代理
 │   │   ├── sjz/          # 石家庄台API 动态
-│   │   ├── yunnan/       # 云南台API 
+│   │   ├── yunnan/       # 云南台API 全链路代理
 │   │   ├── zhejiang/     # 浙江台API
 │   │   └── utils/        # 通用工具函数
 │   │       ├── crypto.ts # 加密工具（MD5/AES/XXTEA）
