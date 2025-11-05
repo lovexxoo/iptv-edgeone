@@ -341,6 +341,57 @@ export default function Home() {
         </div>
 
         <div className={styles.card}>
+          <h2>📺 吉林TV (动态，目前15个)</h2>
+          <ul className={styles.smallList}>
+            <li>吉林卫视</li>
+            <li>都市频道</li>
+            <li>生活频道</li>
+            <li>影视频道</li>
+            <li>乡村频道</li>
+            <li>综艺文化</li>
+            <li>长春新闻综合</li>
+            <li>吉视公共新闻</li>
+            <li>四平新闻综合</li>
+            <li>辽源新闻综合</li>
+            <li>通化新闻综合</li>
+            <li>白山新闻综合</li>
+            <li>白城新闻综合</li>
+            <li>松原新闻综合</li>
+            <li>延边卫视</li>
+          </ul>
+        </div>
+
+        <div className={styles.card}>
+          <h2>📺 甘肃TV (6个)</h2>
+          <ul className={styles.smallList}>
+            <li>甘肃卫视</li>
+            <li>文化影视</li>
+            <li>公共应急</li>
+            <li>少儿频道</li>
+            <li>科教频道</li>
+            <li>移动电视</li>
+          </ul>
+        </div>
+
+        <div className={styles.card}>
+          <h2>📺 兰州TV (5个)</h2>
+          <ul className={styles.smallList}>
+            <li>兰州新闻综合</li>
+            <li>兰州文旅</li>
+            <li>新闻综合广播</li>
+            <li>音乐广播</li>
+            <li>文艺广播</li>
+          </ul>
+        </div>
+
+        <div className={styles.card}>
+          <h2>📺 重庆TV (1个)</h2>
+          <ul className={styles.smallList}>
+            <li>重庆新闻</li>
+          </ul>
+        </div>
+
+        <div className={styles.card}>
           <h2>📺 石家庄TV (动态)</h2>
           <ul className={styles.smallList}>
             <li>频道列表实时同步API</li>
@@ -367,10 +418,17 @@ export default function Home() {
         <ol>
           <li><strong>直接播放</strong>: 复制API链接到VLC/PotPlayer等播放器</li>
           <li><strong>频道列表</strong>: 添加 <code>?id=list</code> 参数获取M3U8格式频道列表</li>
+          <li><strong>多种ID格式</strong>: 吉林台支持友好ID(jlws)、数字ID(2)、ch前缀(ch2)</li>
           <li><strong>生成播放列表</strong>:
             <pre className={styles.pre}>
-{`curl https://your-domain.com/api/4k?id=list > 4k.m3u8
-vlc 4k.m3u8`}
+{`# 获取4K频道列表
+curl https://your-domain.com/api/4k?id=list > 4k.m3u8
+
+# 获取吉林台列表（动态）
+curl https://your-domain.com/api/jilin?id=list > jilin.m3u8
+
+# 播放
+vlc jilin.m3u8`}
             </pre>
           </li>
         </ol>

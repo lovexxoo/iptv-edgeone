@@ -242,3 +242,122 @@ export async function aesDecrypt(base64Data: string, keyHex: string, ivHex: stri
   
   return new TextDecoder().decode(textBytes);
 }
+
+/**
+ * XXTEA解密算法
+ * 用于吉林台等加密接口
+ */
+function int32(n: number): number {
+  while (n >= 2147483648) n -= 4294967296;
+  while (n <= -2147483649) n += 4294967296;
+  return Math.floor(n);
+}
+
+function str2long(s: Uint8Array, w: boolean): number[] {
+  const len = s.length;
+  const v: number[] = [];
+  
+  for (let i = 0; i < len; i += 4) {
+    v.push(
+      s[i] | 
+      (s[i + 1] << 8) | 
+      (s[i + 2] << 16) | 
+      (s[i + 3] << 24)
+    );
+  }
+  
+  if (w) {
+    v.push(len);
+  }
+  
+  return v;
+}
+
+function long2str(v: number[], w: boolean): Uint8Array {
+  let n = (v.length - 1) << 2;
+  
+  if (w) {
+    const m = v[v.length - 1];
+    if (m < n - 3 || m > n) {
+      throw new Error('Invalid XXTEA data');
+    }
+    n = m;
+  }
+  
+  const s = new Uint8Array(n);
+  let offset = 0;
+  
+  for (let i = 0; i < v.length; i++) {
+    s[offset++] = v[i] & 0xff;
+    if (offset >= n) break;
+    s[offset++] = (v[i] >>> 8) & 0xff;
+    if (offset >= n) break;
+    s[offset++] = (v[i] >>> 16) & 0xff;
+    if (offset >= n) break;
+    s[offset++] = (v[i] >>> 24) & 0xff;
+    if (offset >= n) break;
+  }
+  
+  return s;
+}
+
+/**
+ * XXTEA解密
+ * @param data - base64编码的加密数据
+ * @param key - 解密密钥
+ * @returns 解密后的字符串
+ */
+export function xxteaDecrypt(data: string, key: string): string {
+  // Base64解码
+  const encryptedBytes = Uint8Array.from(atob(data), c => c.charCodeAt(0));
+  
+  // 密钥处理
+  const keyBytes = new TextEncoder().encode(key);
+  const paddedKey = new Uint8Array(16);
+  paddedKey.set(keyBytes.slice(0, 16));
+  
+  // 转换为32位整数数组
+  let v = str2long(encryptedBytes, false);
+  const k = str2long(paddedKey, false);
+  
+  // 补齐密钥为4个32位整数
+  while (k.length < 4) {
+    k.push(0);
+  }
+  
+  const n = v.length - 1;
+  if (n < 1) {
+    return '';
+  }
+  
+  let z = v[n];
+  let y = v[0];
+  const delta = 0x9E3779B9;
+  const q = Math.floor(6 + 52 / (n + 1));
+  let sum = int32(q * delta);
+  
+  while (sum !== 0) {
+    const e = (sum >>> 2) & 3;
+    
+    for (let p = n; p > 0; p--) {
+      z = v[p - 1];
+      const mx = int32(
+        (((z >>> 5) ^ (y << 2)) + ((y >>> 3) ^ (z << 4))) ^
+        ((sum ^ y) + (k[(p & 3) ^ e] ^ z))
+      );
+      y = v[p] = int32(v[p] - mx);
+    }
+    
+    z = v[n];
+    const mx = int32(
+      (((z >>> 5) ^ (y << 2)) + ((y >>> 3) ^ (z << 4))) ^
+      ((sum ^ y) + (k[0 ^ e] ^ z))
+    );
+    y = v[0] = int32(v[0] - mx);
+    sum = int32(sum - delta);
+  }
+  
+  // 转换回字符串
+  const decryptedBytes = long2str(v, true);
+  return new TextDecoder().decode(decryptedBytes);
+}

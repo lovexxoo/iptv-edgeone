@@ -164,13 +164,13 @@
 - 频道列表实时同步API
 - 请访问 /api/sjz?id=list 获取最新频道
 
-### 📺 云南TV (6个)
-- 云南卫视 (ynws)
-- 云南都市 (ynds)
-- 云南娱乐 (ynyl)
-- 云南公共 (yngg)
-- 云南国际 (yngj)
-- 云南少儿 (ynse)
+### 📺 云南TV (6个) 🔗全链路代理
+- 云南卫视 (ynws) 
+- 云南都市 (ynds) 
+- 云南娱乐 (ynyl) 
+- 云南公共 (yngg) 
+- 云南国际 (yngj) 
+- 云南少儿 (ynse) 
 
 ### 📺 浙江TV (38个)
 - 杭州萧山综合 (hzxs1)
@@ -257,17 +257,17 @@
 - GRTN文化频道 (75)
 - GRTN生活频道 (102)
 
-### 📺 四川TV (10个)
-- 四川卫视4K (scws4k)
-- 四川卫视 (scws)
-- 四川经济 (scjj)
-- 四川文化旅游 (scwhly)
-- 四川新闻 (scxw)
-- 四川影视文艺 (scyswy)
-- 四川星空购物 (scxkgw)
-- 四川妇女儿童 (scfnet)
-- 四川乡村 (scxc)
-- 康巴卫视 (kbws)
+### 📺 四川TV (10个) 🔗全链路代理
+- 四川卫视4K (scws4k) 
+- 四川卫视 (scws) 
+- 四川经济 (scjj) 
+- 四川文化旅游 (scwhly) 
+- 四川新闻 (scxw) 
+- 四川影视文艺 (scyswy) 
+- 四川星空购物 (scxkgw) 
+- 四川妇女儿童 (scfnet) 
+- 四川乡村 (scxc) 
+- 康巴卫视 (kbws) 
 
 ### 📺 山西TV (17个)
 - 山西卫视 (sxws)
@@ -288,12 +288,50 @@
 - 临汾新闻综合 (lfxwzh)
 - 吕梁新闻综合 (llxwzh)
 
+### 📺 吉林TV (动态，目前15个) 
+- 吉林卫视 (jlws/2/ch2)
+- 都市频道 (jlds/3/ch3)
+- 生活频道 (jlsh/4/ch4)
+- 影视频道 (jlys/5/ch5)
+- 乡村频道 (jlxc/6/ch6)
+- 综艺文化 (jlzywh/8/ch8)
+- 长春新闻综合 (cczh/1006/ch1006)
+- 吉视公共新闻 (jlszh/1008/ch1008)
+- 四平新闻综合 (spzh/1016/ch1016)
+- 辽源新闻综合 (lyzh/1018/ch1018)
+- 通化新闻综合 (thzh/1020/ch1020)
+- 白山新闻综合 (bszh/1022/ch1022)
+- 白城新闻综合 (bczh/1030/ch1030)
+- 松原新闻综合 (syzh/1032/ch1032)
+- 延边卫视 (ybws/50/ch50)
+
+### 📺 甘肃TV (6个) 🔗全链路代理
+- 甘肃卫视 (gsws) 
+- 文化影视 (whys) 
+- 公共应急 (ggyj) 
+- 少儿频道 (sepd) 
+- 科教频道 (dspd) 
+- 移动电视 (ydds) 
+
+### 📺 兰州TV (5个) 🔗全链路代理
+- 兰州新闻综合 (lzxwzh) 
+- 兰州文旅 (lzwl) 
+- 兰州新闻综合广播 (lzzhgb) 
+- 兰州音乐广播 (lzyygb) 
+- 兰州文艺广播 (lzwygb) 
+
+### 📺 重庆TV (1个) 
+- 重庆新闻 (cqxw)
+
 
 ## 功能特性
 
 - ✅ 支持全国多地电视台频道
 - ✅ M3U8播放列表代理
 - ✅ TS文件自动代理
+- ✅ XXTEA解密支持（吉林台）
+- ✅ 动态频道列表（吉林、石家庄等）
+- ✅ 全链路代理（四川、云南、甘肃、兰州等）
 - ✅ Edge Runtime运行
 - ✅ 无需服务器,直接部署到EdgeOne
 - ✅ 统一API接口设计
@@ -331,8 +369,31 @@ https://your-domain.com/api/4k?id=btv4k
 # 北京卫视
 https://your-domain.com/api/beijing?id=bjws
 
+# 吉林卫视（支持多种ID格式）
+https://your-domain.com/api/jilin?id=jlws
+https://your-domain.com/api/jilin?id=2
+https://your-domain.com/api/jilin?id=ch2
+
+# 四川卫视（全链路代理m3u8+ts）
+https://your-domain.com/api/sichuan?id=scws
+
+# 云南卫视（全链路代理m3u8+ts）
+https://your-domain.com/api/yunnan?id=ynws
+
+# 甘肃卫视（全链路代理m3u8+ts）
+https://your-domain.com/api/gansu?id=gsws
+
+# 兰州文旅（全链路代理，支持TV和广播）
+https://your-domain.com/api/lanzhou?id=lzwl
+
+# 重庆新闻
+https://your-domain.com/api/chongqing?id=cqxw
+
 # 石家庄频道列表（动态）
 https://your-domain.com/api/sjz?id=list
+
+# 吉林频道列表（动态）
+https://your-domain.com/api/jilin?id=list
 ```
 
 ### 播放器使用
@@ -435,20 +496,36 @@ iptv-edgeone/
 │   ├── api/
 │   │   ├── 4k/           # 4K频道API
 │   │   ├── beijing/      # 北京台API
+│   │   ├── chongqing/    # 重庆台API 
+│   │   ├── gansu/        # 甘肃台API 全链路代理
+│   │   ├── guangdong/    # 广东台API
+│   │   ├── guangzhou/    # 广州台API
 │   │   ├── hebei/        # 河北台API
 │   │   ├── henan/        # 河南台API
 │   │   ├── jiangsu/      # 江苏台API
-│   │   ├── shandong/     # 山东台API
+│   │   ├── jilin/        # 吉林台API 动态
+│   │   ├── lanzhou/      # 兰州台API 全链路代理
+│   │   ├── nanjing/      # 南京台API
 │   │   ├── shaanxi/      # 陕西台API
+│   │   ├── shandong/     # 山东台API
+│   │   ├── shanghai/     # 上海台API
+│   │   ├── shanxi/       # 山西台API
 │   │   ├── shenzhen/     # 深圳台API
-│   │   ├── sjz/          # 石家庄台API（动态）
-│   │   ├── yunnan/       # 云南台API
-│   │   └── utils/        # 通用工具函数（如getRealHost）
+│   │   ├── sichuan/      # 四川台API 全链路代理
+│   │   ├── sjz/          # 石家庄台API 动态
+│   │   ├── yunnan/       # 云南台API 
+│   │   ├── zhejiang/     # 浙江台API
+│   │   └── utils/        # 通用工具函数
+│   │       ├── crypto.ts # 加密工具（MD5/AES/XXTEA）
+│   │       └── url.ts    # URL工具（getRealHost）
+│   ├── styles/           # 样式文件
+│   │   └── home.module.css
 │   ├── layout.tsx        # 全局布局
 │   └── page.tsx          # 首页
 ├── package.json
 ├── next.config.js
 ├── tsconfig.json
+├── DEPLOY.md             # 部署指南
 ├── README.md
 └── ...
 ```
