@@ -412,7 +412,7 @@ export default function Home() {
         </div>
 
         <div className={styles.card}>
-          <h2>📺 安徽TV (8个)</h2>
+          <h2>📺 安徽TV (动态，目前8个)</h2>
           <ul className={styles.smallList}>
             <li>安徽卫视</li>
             <li>经济生活</li>
@@ -422,6 +422,7 @@ export default function Home() {
             <li>农业科教</li>
             <li>国际频道</li>
             <li>移动电视</li>
+            <li>...（频道列表实时同步API）</li>
           </ul>
         </div>
 

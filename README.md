@@ -320,15 +320,16 @@
 - 兰州音乐广播 (lzyygb) 
 - 兰州文艺广播 (lzwygb) 
 
-### 📺 安徽TV (8个) 🔗全链路代理
-- 安徽卫视 (ahws)
-- 经济生活 (ahjj)
-- 综艺体育 (ahzy)
-- 影视频道 (ahys)
-- 公共频道 (ahgg)
-- 农业科教 (ahnk)
-- 国际频道 (ahgj)
-- 移动电视 (ahyd)
+### 📺 安徽TV (动态，目前8个) 🔗全链路代理
+- 安徽卫视 (ahws/47)
+- 经济生活 (ahjj/71)
+- 综艺体育 (ahzy/73)
+- 影视频道 (ahys/72)
+- 安徽公共 (ahgg/50)
+- 农业·科教 (ahnk/51)
+- 安徽国际 (ahgj/70)
+- 移动电视 (ahyd/68)
+- 请访问 /api/anhui?id=list 获取最新频道
 
 ### 📺 重庆TV (1个) 
 - 重庆新闻 (cqxw)
@@ -340,7 +341,7 @@
 - ✅ M3U8播放列表代理
 - ✅ TS文件自动代理
 - ✅ XXTEA解密支持（吉林台）
-- ✅ 动态频道列表（吉林、石家庄等）
+- ✅ 动态频道列表（吉林、石家庄、安徽等）
 - ✅ 全链路代理（四川、云南、甘肃、兰州、安徽等）
 - ✅ Edge Runtime运行
 - ✅ 无需服务器,直接部署到EdgeOne
@@ -396,8 +397,9 @@ https://your-domain.com/api/gansu?id=gsws
 # 兰州文旅（全链路代理，支持TV和广播）
 https://your-domain.com/api/lanzhou?id=lzwl
 
-# 安徽卫视（全链路代理m3u8+ts）
+# 安徽卫视（全链路代理m3u8+ts，动态频道）
 https://your-domain.com/api/anhui?id=ahws
+https://your-domain.com/api/anhui?id=list  # 获取完整频道列表
 
 # 重庆新闻
 https://your-domain.com/api/chongqing?id=cqxw
@@ -508,7 +510,7 @@ iptv-edgeone/
 ├── app/
 │   ├── api/
 │   │   ├── 4k/           # 4K频道API
-│   │   ├── anhui/        # 安徽台API 全链路代理
+│   │   ├── anhui/        # 安徽台API 全链路代理 动态
 │   │   ├── beijing/      # 北京台API
 │   │   ├── chongqing/    # 重庆台API 
 │   │   ├── gansu/        # 甘肃台API 全链路代理

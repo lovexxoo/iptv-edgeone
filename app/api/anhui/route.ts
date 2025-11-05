@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getRealHost } from '../utils/url';
 
 /**
- * 安徽台 - 全链路代理
+ * 安徽台 - 全链路代理（动态频道）
  * 
  * 实现流程：
- * 1. 调用 API 获取频道列表和 M3U8 地址（带缓存）
+ * 1. 动态调用 API 获取频道列表和 M3U8 地址（带缓存）
  * 2. 获取一级 M3U8，提取二级 M3U8 路径
  * 3. 获取二级 M3U8，代理所有 TS 文件
  * 4. 所有请求都添加 Referer: https://www.ahtv.cn/ 头
@@ -15,21 +15,16 @@ import { getRealHost } from '../utils/url';
 
 export const runtime = 'edge';
 
-// 频道配置（ID对应API返回顺序）
-interface ChannelConfig {
-  id: number;
-  name: string;
-}
-
-const CHANNELS: Record<string, ChannelConfig> = {
-  ahws: { id: 1, name: '安徽卫视' },
-  ahjj: { id: 2, name: '经济生活' },
-  ahzy: { id: 3, name: '综艺体育' },
-  ahys: { id: 4, name: '影视频道' },
-  ahgg: { id: 5, name: '公共频道' },
-  ahnk: { id: 6, name: '农业科教' },
-  ahgj: { id: 7, name: '国际频道' },
-  ahyd: { id: 8, name: '移动电视' },
+// 频道名称到友好ID的映射
+const CHANNEL_NAME_MAP: Record<string, string> = {
+  '安徽卫视': 'ahws',
+  '经济生活': 'ahjj',
+  '综艺体育': 'ahzy',
+  '影视频道': 'ahys',
+  '安徽公共': 'ahgg',
+  '农业·科教': 'ahnk',
+  '安徽国际': 'ahgj',
+  '移动电视': 'ahyd',
 };
 
 // API 配置
@@ -44,22 +39,28 @@ const DEFAULT_HEADERS = {
   'Accept-Language': 'zh-CN,zh;q=0.9',
 };
 
+// 频道数据接口
+interface ChannelData {
+  id: number;
+  name: string;
+  m3u8: string;
+}
+
 // 缓存配置（Edge Runtime 使用内存缓存）
-const channelCache = new Map<string, { data: string; timestamp: number }>();
+const channelCache = new Map<string, { data: ChannelData[]; timestamp: number }>();
 const CACHE_TTL = 3600 * 1000; // 1小时
 
 /**
- * 获取频道 M3U8 地址（带缓存）
+ * 获取频道列表（带缓存）
  */
-async function getChannelM3U8(channelId: number): Promise<string | null> {
+async function getChannelList(): Promise<ChannelData[]> {
   const cacheKey = 'channel_list';
   const now = Date.now();
   
   // 检查缓存
   const cached = channelCache.get(cacheKey);
   if (cached && (now - cached.timestamp < CACHE_TTL)) {
-    const channelMap = JSON.parse(cached.data);
-    return channelMap[channelId] || null;
+    return cached.data;
   }
   
   // 获取频道列表
@@ -73,32 +74,55 @@ async function getChannelM3U8(channelId: number): Promise<string | null> {
     });
     
     if (!response.ok) {
-      return null;
+      return [];
     }
     
     const channels = await response.json();
     
-    // 构建频道映射
-    const channelMap: Record<number, string> = {};
-    let index = 1;
+    // 构建频道数据数组
+    const channelList: ChannelData[] = [];
     for (const channel of channels) {
-      if (channel.m3u8) {
-        channelMap[index] = channel.m3u8;
-        index++;
+      if (channel.m3u8 && channel.name) {
+        channelList.push({
+          id: channel.id,
+          name: channel.name,
+          m3u8: channel.m3u8,
+        });
       }
     }
     
     // 更新缓存
     channelCache.set(cacheKey, {
-      data: JSON.stringify(channelMap),
+      data: channelList,
       timestamp: now,
     });
     
-    return channelMap[channelId] || null;
+    return channelList;
   } catch (error) {
     console.error('[Anhui] Error fetching channel list:', error);
-    return null;
+    return [];
   }
+}
+
+/**
+ * 根据ID查找频道
+ */
+function findChannel(channels: ChannelData[], id: string): ChannelData | null {
+  // 先尝试友好ID映射 - 通过名称查找
+  for (const [name, friendlyId] of Object.entries(CHANNEL_NAME_MAP)) {
+    if (friendlyId === id) {
+      return channels.find(ch => ch.name === name) || null;
+    }
+  }
+  
+  // 尝试直接通过数字ID查找
+  if (/^\d+$/.test(id)) {
+    const numericId = parseInt(id, 10);
+    return channels.find(ch => ch.id === numericId) || null;
+  }
+  
+  // 尝试通过名称直接查找
+  return channels.find(ch => ch.name === id) || null;
 }
 
 /**
@@ -134,19 +158,10 @@ function extractSecondM3U8(m3u8Content: string, baseUrl: string): string | null 
 /**
  * 获取 M3U8 播放列表（全链路代理）
  */
-async function getM3U8Playlist(channelId: string, host: string, pathname: string): Promise<Response> {
-  const channel = CHANNELS[channelId];
-  
-  if (!channel) {
-    return new NextResponse('Invalid channel ID', { status: 400 });
-  }
-
+async function getM3U8Playlist(channel: ChannelData, host: string, pathname: string): Promise<Response> {
   try {
-    // 1. 获取频道 M3U8 地址
-    const m3u8Url = await getChannelM3U8(channel.id);
-    if (!m3u8Url) {
-      return new NextResponse('Failed to get channel M3U8 URL', { status: 502 });
-    }
+    // 1. 使用频道的 M3U8 地址
+    const m3u8Url = channel.m3u8;
 
     // 2. 获取一级 M3U8
     const firstM3U8Response = await fetch(m3u8Url, { headers: DEFAULT_HEADERS });
@@ -242,8 +257,18 @@ async function proxyTSFile(tsUrl: string): Promise<Response> {
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
-  const channelId = searchParams.get('id') || 'ahws';
+  const channelId = searchParams.get('id') || 'list';
   const tsUrl = searchParams.get('ts');
+
+  // 获取频道列表
+  const channels = await getChannelList();
+
+  if (channels.length === 0) {
+    return new NextResponse('Failed to fetch channel data', {
+      status: 503,
+      headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+    });
+  }
 
   // 如果请求频道列表
   if (channelId === 'list') {
@@ -252,15 +277,19 @@ export async function GET(request: NextRequest) {
     
     let m3u8Content = '#EXTM3U\n';
     
-    for (const [id, config] of Object.entries(CHANNELS)) {
-      m3u8Content += `#EXTINF:-1,${config.name}\n`;
-      m3u8Content += `http://${host}${pathname}?id=${id}\n`;
+    for (const channel of channels) {
+      // 使用名称映射生成友好ID
+      const friendlyId = CHANNEL_NAME_MAP[channel.name] || `${channel.id}`;
+      
+      m3u8Content += `#EXTINF:-1,${channel.name}\n`;
+      m3u8Content += `http://${host}${pathname}?id=${friendlyId}\n`;
     }
     
     return new NextResponse(m3u8Content, {
       headers: {
         'Content-Type': 'application/vnd.apple.mpegurl',
         'Content-Disposition': 'inline; filename="anhui.m3u8"',
+        'Cache-Control': 'public, max-age=300',
       },
     });
   }
@@ -270,10 +299,20 @@ export async function GET(request: NextRequest) {
     return proxyTSFile(decodeURIComponent(tsUrl));
   }
 
+  // 查找指定频道
+  const channel = findChannel(channels, channelId);
+  
+  if (!channel) {
+    return new NextResponse('Channel not found', {
+      status: 404,
+      headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+    });
+  }
+
   // 获取真实 host
   const host = getRealHost(request);
   const pathname = new URL(request.url).pathname;
 
   // 返回 M3U8 播放列表
-  return getM3U8Playlist(channelId, host, pathname);
+  return getM3U8Playlist(channel, host, pathname);
 }
