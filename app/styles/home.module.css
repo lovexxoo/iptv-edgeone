@@ -19,11 +19,57 @@
 .smallList {
   font-size: 14px;
 }
+.tinyList {
+  font-size: 12px;
+  line-height: 1.6;
+  color: #555;
+  margin: 8px 0;
+}
+.highlight {
+  color: #28a745;
+  font-weight: bold;
+  font-size: 13px;
+  margin: 8px 0;
+}
 .note {
   margin-top: 40px;
   padding: 20px;
   background: #f9f9f9;
   border-radius: 8px;
+}
+.card details {
+  margin: 10px 0;
+  padding: 8px;
+  background: #f8f9fa;
+  border-radius: 4px;
+}
+.card summary {
+  cursor: pointer;
+  padding: 5px;
+  -webkit-user-select: none;
+  user-select: none;
+  color: #007bff;
+  font-size: 13px;
+}
+.card summary:hover {
+  background: #e9ecef;
+  border-radius: 3px;
+}
+.card code {
+  background: #e9ecef;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 12px;
+  font-family: 'Courier New', monospace;
+}
+.note {
+  margin-top: 12px;
+  padding: 10px;
+  background: #f0f8ff;
+  border-radius: 6px;
+  font-size: 12px;
+  line-height: 1.8;
+  border-left: 3px solid #007bff;
 }
 .pre {
   background: #fff;

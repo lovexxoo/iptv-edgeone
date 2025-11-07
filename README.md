@@ -331,8 +331,72 @@
 - 移动电视 (ahyd/68)
 - 请访问 /api/anhui?id=list 获取最新频道
 
+### 📺 福建TV (10个)
+- 综合频道 (fjzh/4)
+- 东南卫视 (fjws/5)
+- 乡村振兴·公共频道 (fjgg/6)
+- 新闻频道 (fjxw/13)
+- 电视剧频道 (fjdsj/7)
+- 旅游频道 (fjly/8)
+- 经济生活频道 (fjjj/9)
+- 文体频道 (fjwt/10)
+- 少儿频道 (fjse/2)
+- 海峡卫视 (hxws/3)
+
 ### 📺 重庆TV (1个) 
 - 重庆新闻 (cqxw)
+
+### 📺 湖北地方TV (动态，32个可播放) 🔗部分频道全链路代理
+
+#### 长江云地市台 (13个 - 302直连)
+- 宜昌综合频道 (10091_59) 
+- 宜昌旅游生活 (10091_60) 
+- 大冶综合 (10102_4) 
+- 大冶湖之声FM89.3 (10102_65) 📻
+- 当阳电视台 (10118_64) 
+- 应城综合频道 (10135_43) 
+- 应城综合广播 (10135_51) 📻
+- 孝感新闻综合频道 (10139_62) 
+- 孝感生活频道 (10139_63) 
+- 咸宁综合 (10140_91) 
+- 咸宁经济生活 (10140_80) 
+- 襄阳综合广播党风政风热线 (10125_558) 📻
+
+#### 恩施广电API (9个 - 302直连)
+- 📺 恩施综合 (enshi_1) 
+- 📺 恩施文旅 (enshi_2) 
+- 📺 巴东综合 (enshi_22) 
+- 📺 咸丰综合 (enshi_31) 
+- 📻 咸丰FM103.5 (enshi_36) 
+- 📺 鹤峰综合 (enshi_33) 
+- 📻 鹤峰FM102.1 (enshi_37) 
+- 📻 恩施FM99 (enshi_15) 
+- 📻 恩施FM94 (enshi_16) 
+
+#### 十堰广电API (2个 - 302直连)
+- 十堰新闻综合 (sy1) 
+- 十堰经济旅游 (sy3) 
+
+#### 荆门广电API (2个 - 302直连)
+- 荆门新闻综合频道 (jm4) 
+- 荆门科教文旅频道 (jm7) 
+
+#### 长阳广电 (1个 - 302直连)
+- 长阳综合 (cyzh) 
+
+#### 代理频道 (6个 - 全链路代理🔗)
+- 江陵综合 (jlzh) 
+- 襄阳综合 (xyzh) 
+- 襄阳经济生活 (xysh) 
+- 襄阳公共 (xygg) 
+- 武穴综合 (wxzh) 
+- 罗田综合 (ltzh) 
+
+**说明：**
+- 📻 标记为广播频道（共7个）
+- 🔗 代理频道自动处理Referer验证
+- 请访问 `/api/hubei?id=list` 获取精选可播放频道
+- 请访问 `/api/hubei?id=list&all=1` 获取全部动态频道（含不可用）
 
 
 ## 功能特性
@@ -401,8 +465,29 @@ https://your-domain.com/api/lanzhou?id=lzwl
 https://your-domain.com/api/anhui?id=ahws
 https://your-domain.com/api/anhui?id=list  # 获取完整频道列表
 
+# 福建东南卫视
+https://your-domain.com/api/fujian?id=fjws
+
 # 重庆新闻
 https://your-domain.com/api/chongqing?id=cqxw
+
+# 湖北地方台（部分全链路代理，动态频道）
+# 302直连频道示例
+https://your-domain.com/api/hubei?id=10091_59    # 宜昌综合频道
+https://your-domain.com/api/hubei?id=enshi_1     # 恩施综合
+https://your-domain.com/api/hubei?id=sy1         # 十堰新闻综合
+https://your-domain.com/api/hubei?id=jm4         # 荆门新闻综合
+https://your-domain.com/api/hubei?id=cyzh        # 长阳综合
+
+# 全链路代理频道示例（自动处理Referer）
+https://your-domain.com/api/hubei?id=jlzh        # 江陵综合
+https://your-domain.com/api/hubei?id=xyzh        # 襄阳综合
+https://your-domain.com/api/hubei?id=ltzh        # 罗田综合
+
+# 获取频道列表
+https://your-domain.com/api/hubei?id=list        # 精选可播放频道（32个，100%成功率）
+https://your-domain.com/api/hubei?id=list&all=1  # 全部动态频道（含不可用）
+https://your-domain.com/api/hubei?id=list&refresh=1  # 强制刷新缓存
 
 # 石家庄频道列表（动态）
 https://your-domain.com/api/sjz?id=list
@@ -414,6 +499,7 @@ https://your-domain.com/api/jilin?id=list
 ### 播放器使用
 
 ```m3u
+```m3u
 #EXTM3U
 #EXTINF:-1,北京卫视4K
 https://your-domain.com/api/4k?id=btv4k
@@ -421,8 +507,25 @@ https://your-domain.com/api/4k?id=btv4k
 https://your-domain.com/api/beijing?id=bjws
 #EXTINF:-1,云南卫视
 https://your-domain.com/api/yunnan?id=ynws
-#EXTINF:-1,石家庄频道（动态）
-https://your-domain.com/api/sjz?id=list
+
+# 湖北地方台示例（302直连）
+#EXTINF:-1 group-title="湖北",宜昌综合频道
+https://your-domain.com/api/hubei?id=10091_59
+#EXTINF:-1 group-title="湖北",恩施综合
+https://your-domain.com/api/hubei?id=enshi_1
+#EXTINF:-1 group-title="湖北",十堰新闻综合
+https://your-domain.com/api/hubei?id=sy1
+
+# 湖北代理频道示例（全链路代理）
+#EXTINF:-1 group-title="湖北",江陵综合
+https://your-domain.com/api/hubei?id=jlzh
+#EXTINF:-1 group-title="湖北",襄阳综合
+https://your-domain.com/api/hubei?id=xyzh
+
+# 湖北地方台列表（动态，推荐）
+#EXTINF:-1,湖北地方台列表（动态）
+https://your-domain.com/api/hubei?id=list
+```
 ```
  
 ## 本地开发
@@ -513,11 +616,13 @@ iptv-edgeone/
 │   │   ├── anhui/        # 安徽台API 全链路代理 动态
 │   │   ├── beijing/      # 北京台API
 │   │   ├── chongqing/    # 重庆台API 
+│   │   ├── fujian/       # 福建台API
 │   │   ├── gansu/        # 甘肃台API 全链路代理
 │   │   ├── guangdong/    # 广东台API
 │   │   ├── guangzhou/    # 广州台API
 │   │   ├── hebei/        # 河北台API
 │   │   ├── henan/        # 河南台API
+│   │   ├── hubei/        # 湖北台API 部分代理 动态
 │   │   ├── jiangsu/      # 江苏台API
 │   │   ├── jilin/        # 吉林台API 动态
 │   │   ├── lanzhou/      # 兰州台API 全链路代理

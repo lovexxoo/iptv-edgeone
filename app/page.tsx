@@ -302,7 +302,7 @@ export default function Home() {
         </div>
 
         <div className={styles.card}>
-          <h2>📺 四川TV (10个)</h2>
+          <h2>📺 四川TV (10个) 🔗全链路代理</h2>
           <ul className={styles.smallList}>
             <li>四川卫视4K</li>
             <li>四川卫视</li>
@@ -362,7 +362,7 @@ export default function Home() {
         </div>
 
         <div className={styles.card}>
-          <h2>📺 甘肃TV (6个)</h2>
+          <h2>📺 甘肃TV (6个) 🔗全链路代理</h2>
           <ul className={styles.smallList}>
             <li>甘肃卫视</li>
             <li>文化影视</li>
@@ -374,7 +374,7 @@ export default function Home() {
         </div>
 
         <div className={styles.card}>
-          <h2>📺 兰州TV (5个)</h2>
+          <h2>📺 兰州TV (5个) 🔗全链路代理</h2>
           <ul className={styles.smallList}>
             <li>兰州新闻综合</li>
             <li>兰州文旅</li>
@@ -392,6 +392,48 @@ export default function Home() {
         </div>
 
         <div className={styles.card}>
+          <h2>📺 湖北地方TV (动态，目前32个) 🔗部分代理</h2>
+          <p className={styles.highlight}>✅ 精选可播放频道</p>
+          <details>
+            <summary><strong>长江云地市台 (13个)</strong></summary>
+            <ul className={styles.tinyList}>
+              <li>宜昌综合、宜昌旅游生活</li>
+              <li>大冶综合、大冶湖之声FM89.3📻</li>
+              <li>当阳电视台</li>
+              <li>应城综合频道、应城综合广播📻</li>
+              <li>孝感新闻综合、孝感生活</li>
+              <li>咸宁综合、咸宁经济生活</li>
+              <li>襄阳综合广播📻</li>
+            </ul>
+          </details>
+          <details>
+            <summary><strong>恩施广电 (9个)</strong></summary>
+            <ul className={styles.tinyList}>
+              <li>📺 恩施综合、恩施文旅</li>
+              <li>📺 巴东综合、咸丰综合、鹤峰综合</li>
+              <li>📻 咸丰FM103.5、鹤峰FM102.1</li>
+              <li>📻 恩施FM99、恩施FM94</li>
+            </ul>
+          </details>
+          <details>
+            <summary><strong>其他地区 (10个)</strong></summary>
+            <ul className={styles.tinyList}>
+              <li>十堰新闻综合、十堰经济旅游</li>
+              <li>荆门新闻综合、荆门科教文旅</li>
+              <li>长阳综合</li>
+              <li>🔗 江陵综合、襄阳综合</li>
+              <li>🔗 襄阳经济生活、襄阳公共</li>
+              <li>🔗 武穴综合、罗田综合</li>
+            </ul>
+          </details>
+          <p className={styles.note}>
+            📻 7个广播频道 | 🔗 6个代理频道（自动Referer）<br/>
+            <code>/api/hubei?id=list</code> - 精选频道<br/>
+            <code>/api/hubei?id=list&all=1</code> - 全部动态
+          </p>
+        </div>
+
+        <div className={styles.card}>
           <h2>📺 石家庄TV (动态)</h2>
           <ul className={styles.smallList}>
             <li>频道列表实时同步API</li>
@@ -400,7 +442,7 @@ export default function Home() {
         </div>
        
         <div className={styles.card}>
-          <h2>📺 云南TV (6个)</h2>
+          <h2>📺 云南TV (6个) 🔗全链路代理</h2>
           <ul className={styles.smallList}>
             <li>云南卫视</li>
             <li>云南都市</li>
@@ -412,7 +454,7 @@ export default function Home() {
         </div>
 
         <div className={styles.card}>
-          <h2>📺 安徽TV (动态，目前8个)</h2>
+          <h2>📺 安徽TV (动态，目前8个) 🔗全链路代理</h2>
           <ul className={styles.smallList}>
             <li>安徽卫视</li>
             <li>经济生活</li>
@@ -423,6 +465,22 @@ export default function Home() {
             <li>国际频道</li>
             <li>移动电视</li>
             <li>...（频道列表实时同步API）</li>
+          </ul>
+        </div>
+
+        <div className={styles.card}>
+          <h2>📺 福建TV (10个)</h2>
+          <ul className={styles.smallList}>
+            <li>综合频道</li>
+            <li>东南卫视</li>
+            <li>乡村振兴·公共频道</li>
+            <li>新闻频道</li>
+            <li>电视剧频道</li>
+            <li>旅游频道</li>
+            <li>经济生活频道</li>
+            <li>文体频道</li>
+            <li>少儿频道</li>
+            <li>海峡卫视</li>
           </ul>
         </div>
 
