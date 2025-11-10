@@ -49,8 +49,13 @@ export function getRealHost(request: Request): string {
     return hostHeader;
   }
   
-  // 6. 默认返回配置的域名（EdgeOne环境下的兜底方案）
-  return 'iptv.tmd2.com';
+  // 6. 检查是否为开发环境
+  if (process.env.NODE_ENV === 'development') {
+    return 'localhost:3000';
+  }
+  
+  // 7. 默认返回配置的域名（EdgeOne环境下的兜底方案）
+  return process.env.PUBLIC_DOMAIN || 'iptv.tmd2.com';
 }
 
 /**

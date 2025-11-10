@@ -203,9 +203,9 @@ async function getAvailableChannels(): Promise<Array<{ id: number; code: string;
 // 生成播放列表
 async function generatePlaylist(req: NextRequest, dynamic: boolean = false): Promise<string> {
   let host = getRealHost(req);
-  // 强制使用公网域名
+  // 如果是 EdgeOne 内部域名,替换为公网域名
   if (host.includes('pages-scf') || host.includes('qcloudteo.com')) {
-    host = 'iptv.tmd2.com';
+    host = process.env.PUBLIC_DOMAIN || 'iptv.tmd2.com';
   }
   const pathname = new URL(req.url).pathname;
 
@@ -270,9 +270,9 @@ export async function GET(req: NextRequest) {
   }
 
   let host = getRealHost(req);
-  // 强制使用公网域名
+  // 如果是 EdgeOne 内部域名,替换为公网域名
   if (host.includes('pages-scf') || host.includes('qcloudteo.com')) {
-    host = 'iptv.tmd2.com';
+    host = process.env.PUBLIC_DOMAIN || 'iptv.tmd2.com';
   }
   const pathname = new URL(req.url).pathname;
 
