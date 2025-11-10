@@ -10,11 +10,14 @@
   },
   "dependencies": {
     "next": "^14.0.0",
+    "node-fetch": "^2.7.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "socks-proxy-agent": "^8.0.5"
   },
   "devDependencies": {
     "@types/node": "^20.19.24",
+    "@types/node-fetch": "^2.6.13",
     "@types/prop-types": "^15.7.15",
     "@types/react": "^18.2.0",
     "typescript": "^5.0.0"

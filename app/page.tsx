@@ -434,13 +434,83 @@ export default function Home() {
         </div>
 
         <div className={styles.card}>
+          <h2>📺 内蒙古TV (动态，目前20个)</h2>
+          <ul className={styles.smallList}>
+              <li>内蒙古卫视、内蒙古蒙古语卫视</li>
+              <li>内蒙古新闻综合、内蒙古经济生活</li>
+              <li>内蒙古少儿、内蒙古文体娱乐</li>
+              <li>内蒙古农牧、内蒙古蒙古语文化</li>
+              <li>呼和浩特、锡林郭勒</li>
+              <li>阿拉善、巴彦淖尔</li>
+              <li>鄂尔多斯、赤峰</li>
+              <li>通辽、乌兰察布</li>
+              <li>乌海、呼伦贝尔</li>
+              <li>兴安、包头</li>
+            </ul>
+        </div>
+
+        <div className={styles.card}>
           <h2>📺 石家庄TV (动态)</h2>
           <ul className={styles.smallList}>
             <li>频道列表实时同步API</li>
             <li>请访问 id=list 获取最新频道</li>
           </ul>
         </div>
+
+        <div className={styles.card}>
+          <h2>📺 湖南TV (16个)</h2>
+            <ul className={styles.smallList}>
+              <li>湖南经视、湖南电影</li>
+              <li>湖南都市、湖南电视剧</li>
+              <li>湖南爱晚、湖南国际</li>
+              <li>湖南娱乐</li>
+              <li>金鹰纪实、金鹰卡通</li>
+              <li>快乐垂钓、先锋乒羽</li>
+              <li>长沙新闻、长沙政法、长沙女性</li>
+              <li>快乐购、茶频道</li>
+            </ul>
+         </div>
        
+        <div className={styles.card}>
+          <h2>📺 海南TV (7个)</h2>
+          <ul className={styles.smallList}>
+            <li>海南卫视、三沙卫视</li>
+            <li>海南新闻、海南文旅</li>
+            <li>海南自贸、海南公共</li>
+            <li>海南少儿</li>
+          </ul>
+        </div>
+
+        <div className={styles.card}>
+          <h2>📺 贵州TV (7个)</h2>
+          <ul className={styles.smallList}>
+            <li>贵州卫视、贵州公共</li>
+            <li>贵州文艺、贵州生活</li>
+            <li>贵州生态乡村、贵州科教健康</li>
+            <li>贵州移动电视</li>
+          </ul>
+        </div>
+
+        <div className={styles.card}>
+          <h2>📺 西藏TV (3个)</h2>
+          <ul className={styles.smallList}>
+            <li>西藏卫视</li>
+            <li>西藏藏语</li>
+            <li>西藏影视</li>
+          </ul>
+        </div>
+
+        <div className={styles.card}>
+          <h2>📺 新疆TV (动态，目前7个) 🔗全链路代理</h2>
+          <ul className={styles.smallList}>
+            <li>新疆卫视</li>
+            <li>维吾尔语新闻综合</li>
+            <li>哈萨克语新闻综合</li>
+            <li>汉语综艺、维吾尔语影视</li>
+            <li>汉语体育健康、少儿频道</li>
+          </ul>
+        </div>
+
         <div className={styles.card}>
           <h2>📺 云南TV (6个) 🔗全链路代理</h2>
           <ul className={styles.smallList}>
