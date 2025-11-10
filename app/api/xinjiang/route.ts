@@ -202,7 +202,11 @@ async function getAvailableChannels(): Promise<Array<{ id: number; code: string;
 
 // 生成播放列表
 async function generatePlaylist(req: NextRequest, dynamic: boolean = false): Promise<string> {
-  const host = getRealHost(req);
+  let host = getRealHost(req);
+  // 强制使用公网域名
+  if (host.includes('pages-scf') || host.includes('qcloudteo.com')) {
+    host = 'iptv.tmd2.com';
+  }
   const pathname = new URL(req.url).pathname;
 
   let m3u = '#EXTM3U\n';
@@ -265,7 +269,11 @@ export async function GET(req: NextRequest) {
     });
   }
 
-  const host = req.headers.get('host') || '';
+  let host = getRealHost(req);
+  // 强制使用公网域名
+  if (host.includes('pages-scf') || host.includes('qcloudteo.com')) {
+    host = 'iptv.tmd2.com';
+  }
   const pathname = new URL(req.url).pathname;
 
   // 返回M3U8播放列表（全链路代理）

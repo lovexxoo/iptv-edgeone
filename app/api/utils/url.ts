@@ -3,39 +3,53 @@
  * EdgeOne Pages内部使用localhost:9000或pages-scf域名，需要从headers中获取真实域名
  */
 export function getRealHost(request: Request): string {
-  // 尝试多种方式获取真实域名
+  // 内部域名关键词（需要过滤的）
+  const internalKeywords = ['localhost', 'pages-scf', 'qcloudteo.com', '127.0.0.1'];
+  
+  const isInternalHost = (host: string | null): boolean => {
+    if (!host) return true;
+    return internalKeywords.some(keyword => host.includes(keyword));
+  };
   
   // 1. 从 X-Forwarded-Host 获取（EdgeOne代理时最可靠）
   const forwardedHost = request.headers.get('x-forwarded-host');
-  if (forwardedHost && !forwardedHost.includes('localhost') && !forwardedHost.includes('pages-scf') && !forwardedHost.includes('qcloudteo.com')) {
+  if (forwardedHost && !isInternalHost(forwardedHost)) {
     return forwardedHost;
   }
   
   // 2. 从 X-Original-Host 获取
   const originalHost = request.headers.get('x-original-host');
-  if (originalHost && !originalHost.includes('localhost') && !originalHost.includes('pages-scf') && !originalHost.includes('qcloudteo.com')) {
+  if (originalHost && !isInternalHost(originalHost)) {
     return originalHost;
   }
   
-  // 3. 从 Referer 获取（浏览器访问时有效）
+  // 3. 从 URL 中提取（如果是公网域名）
+  try {
+    const url = new URL(request.url);
+    if (!isInternalHost(url.host)) {
+      return url.host;
+    }
+  } catch {}
+  
+  // 4. 从 Referer 获取（浏览器访问时有效）
   const referer = request.headers.get('referer');
   if (referer) {
     try {
       const refererUrl = new URL(referer);
       const refererHost = refererUrl.host;
-      if (!refererHost.includes('localhost') && !refererHost.includes('pages-scf') && !refererHost.includes('qcloudteo.com')) {
+      if (!isInternalHost(refererHost)) {
         return refererHost;
       }
     } catch {}
   }
   
-  // 4. 从 Host header 获取（可能被EdgeOne修改）
+  // 5. 从 Host header 获取（可能被EdgeOne修改）
   const hostHeader = request.headers.get('host');
-  if (hostHeader && !hostHeader.includes('pages-scf') && !hostHeader.includes('qcloudteo.com')) {
+  if (hostHeader && !isInternalHost(hostHeader)) {
     return hostHeader;
   }
   
-  // 5. 默认返回配置的域名（EdgeOne环境下的兜底方案）
+  // 6. 默认返回配置的域名（EdgeOne环境下的兜底方案）
   return 'iptv.tmd2.com';
 }
 
