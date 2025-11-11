@@ -5,6 +5,9 @@ import http from 'http';
 import https from 'https';
 import stream from 'stream';
 
+// 🔥 必须使用 Node.js Runtime (需要 crypto, http, https 模块)
+export const runtime = 'nodejs';
+
 // 频道映射
 const CHANNELS: Record<string, number> = {
   dfws: 1, // 东方卫视4k
@@ -68,6 +71,64 @@ function rsaPublicDecryptAll(encryptedBase64: string): string {
   }
 }
 
+// 使用原生 https 模块代理 m3u8（模拟 PHP curl 行为）
+async function proxyM3u8(url: string): Promise<{ content: string, status: number, headers: Record<string, string> }> {
+  console.log('[sh] proxyM3u8 requesting:', url);
+  
+  return new Promise((resolve) => {
+    const urlObj = new URL(url);
+    const options = {
+      hostname: urlObj.hostname,
+      port: urlObj.port || 443,
+      path: urlObj.pathname + urlObj.search,
+      method: 'GET',
+      headers: {
+        'Referer': 'https://live.kankanews.com/',
+      },
+      // 🔥 关键：不验证 SSL 证书（PHP curl 默认行为）
+      rejectUnauthorized: false,
+    };
+
+    const protocol = urlObj.protocol === 'https:' ? https : http;
+    const req = protocol.request(options, (res) => {
+      console.log('[sh] Response status:', res.statusCode);
+      console.log('[sh] Response headers:', res.headers);
+
+      let data = '';
+      res.on('data', (chunk) => {
+        data += chunk;
+      });
+
+      res.on('end', () => {
+        console.log('[sh] Response data length:', data.length);
+        if (data.length > 0 && data.length < 500) {
+          console.log('[sh] Response preview:', data);
+        }
+
+        resolve({
+          content: data,
+          status: res.statusCode || 502,
+          headers: {
+            'Content-Type': res.headers['content-type'] || 'application/vnd.apple.mpegurl',
+            'Access-Control-Allow-Origin': '*',
+          }
+        });
+      });
+    });
+
+    req.on('error', (error) => {
+      console.error('[sh] Request error:', error);
+      resolve({
+        content: '',
+        status: 502,
+        headers: { 'Content-Type': 'text/plain' }
+      });
+    });
+
+    req.end();
+  });
+}
+
 export async function GET(request: NextRequest): Promise<NextResponse> {
   const urlObj = new URL(request.url);
   const params = urlObj.searchParams;
@@ -126,62 +187,44 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     console.error('[sh] decrypt error', e);
     return new NextResponse('decrypt error', { status: 500 });
   }
-  // 拉取 m3u8 内容，使用 Node 原生 http/https 代理
-  let m3u8_content = '';
-  try {
-    const { content, status, headers: respHeaders } = await proxyM3u8(live);
-    console.log('[sh] m3u8 proxy status:', status);
-    console.log('[sh] m3u8 proxy headers:', JSON.stringify(respHeaders));
-    m3u8_content = content;
-    console.log('[sh] m3u8 head:', m3u8_content.slice(0, 256));
-    if (status !== 200) return new NextResponse('proxy fetch failed', { status });
-  } catch (e) {
-    console.error('[sh] proxy fetch failed', e);
-    return new NextResponse('proxy fetch failed', { status: 502 });
+
+  // 🔥 服务器端代理 M3U8(和PHP版本一样)
+  const result = await proxyM3u8(live);
+  
+  if (result.status !== 200) {
+    console.error('[sh] proxy M3U8 failed, status:', result.status);
+    return new NextResponse(`proxy failed: ${result.status}`, { status: result.status });
   }
 
-// Node 原生 http/https 代理 m3u8 内容，最大兼容 PHP/curl 行为
-async function proxyM3u8(url: string): Promise<{ content: string, status: number, headers: Record<string, string> }> {
-  return new Promise((resolve) => {
-    const mod = url.startsWith('https:') ? https : http;
-    const req = mod.get(url, {
-      headers: {
-        'Referer': 'https://live.kankanews.com/',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36',
-        'Accept': 'application/vnd.apple.mpegurl,text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-        'Accept-Encoding': 'identity',
-        'Connection': 'keep-alive',
-      }
-    }, (resp) => {
-      const headers: Record<string, string> = {
-        'Content-Type': resp.headers['content-type'] || 'application/vnd.apple.mpegurl',
-        'Access-Control-Allow-Origin': '*',
-      };
-      let data = '';
-      resp.setEncoding('utf8');
-      resp.on('data', (chunk) => { data += chunk; });
-      resp.on('end', () => {
-        resolve({ content: data, status: resp.statusCode || 200, headers });
-      });
-    });
-    req.on('error', () => {
-      resolve({ content: '', status: 502, headers: { 'Content-Type': 'text/plain' } });
-    });
-  });
-}
-  // 嵌套m3u8特殊处理（如shds）
-  if (id === 'shds') {
-    const m = m3u8_content.match(/(https:\/\/[^\s]+\.m3u8[^\s]*)/i);
-    if (m) {
-      const nested_url = m[1];
-      const proxy_url = buildApiUrl(request as unknown as Request, '/api/shanghai', undefined) + `?url=${encodeURIComponent(nested_url)}`;
-      m3u8_content = m3u8_content.replace(nested_url, proxy_url);
+  let m3u8Content = result.content;
+  console.log('[sh] M3U8 content length:', m3u8Content.length);
+
+  // 🔥 特殊处理: shds是Master Playlist,包含嵌套的M3U8
+  if (id === 'shds' && /https:\/\/[^\s]+\.m3u8[^\s]*/i.test(m3u8Content)) {
+    const match = m3u8Content.match(/(https:\/\/[^\s]+\.m3u8[^\s]*)/i);
+    if (match) {
+      const nestedUrl = match[1];
+      const proxyUrl = `http://${urlObj.host}/api/shanghai?url=${encodeURIComponent(nestedUrl)}`;
+      m3u8Content = m3u8Content.replace(nestedUrl, proxyUrl);
+      console.log('[sh] shds nested M3U8 replaced');
     }
   }
-  // TS 路径绝对化
-  if (!/^https?:\/\//m.test(m3u8_content)) {
-    const burl = dirnameUrl(live);
-    m3u8_content = m3u8_content.replace(/(.*?\.ts)/ig, `${burl}$1`);
+  // 🔥 TS文件路径处理 - 检查是否包含完整URL的TS
+  if (m3u8Content.includes('https://') && /https:\/\/.*?\.ts/i.test(m3u8Content)) {
+    // TS已经是绝对路径,直接返回
+    console.log('[sh] TS URLs are absolute, no rewrite needed');
+  } else {
+    // TS是相对路径,转换为绝对路径
+    const baseUrl = live.substring(0, live.lastIndexOf('/') + 1);
+    // 匹配不以 http:// 或 https:// 开头的 .ts 文件(可能带查询参数)
+    m3u8Content = m3u8Content.replace(/^(?!https?:\/\/)(.+?\.ts[^\n]*)/gim, baseUrl + '$1');
+    console.log('[sh] TS URLs rewritten to absolute, baseUrl:', baseUrl);
   }
-  return new NextResponse(m3u8_content, { status: 200, headers: { 'Content-Type': 'application/vnd.apple.mpegurl' } });
+
+  return new NextResponse(m3u8Content, {
+    status: 200,
+    headers: {
+      'Content-Type': 'application/vnd.apple.mpegurl',
+    },
+  });
 }
