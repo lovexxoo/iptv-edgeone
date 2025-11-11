@@ -238,9 +238,27 @@ export async function aesDecrypt(base64Data: string, keyHex: string, ivHex: stri
   // 转换为字符串 (移除PKCS7 padding)
   const bytes = new Uint8Array(decrypted);
   const paddingLength = bytes[bytes.length - 1];
-  const textBytes = bytes.slice(0, bytes.length - paddingLength);
   
-  return new TextDecoder().decode(textBytes);
+  // 验证PKCS7 padding是否有效
+  if (paddingLength > 0 && paddingLength <= 16) {
+    // 检查所有padding字节是否一致
+    let validPadding = true;
+    for (let i = 1; i <= paddingLength; i++) {
+      if (bytes[bytes.length - i] !== paddingLength) {
+        validPadding = false;
+        break;
+      }
+    }
+    
+    if (validPadding) {
+      // 移除有效的padding
+      const textBytes = bytes.slice(0, bytes.length - paddingLength);
+      return new TextDecoder().decode(textBytes);
+    }
+  }
+  
+  // 如果padding无效,返回完整数据
+  return new TextDecoder().decode(bytes);
 }
 
 /**
