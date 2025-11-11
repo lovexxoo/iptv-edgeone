@@ -8,13 +8,21 @@
  * 1. 访问官方页面获取 client-id 和频道列表（带真实 auth_key）
  * 2. 调用 get_cdn_leech API 获取带 extrakey 和 aalook 的播放地址
  * 3. 建立 WebSocket 连接到 wss://remote-wa.cjyun.org.cn/liveweb
- * 4. 发送心跳消息（client_id + aa_look）
+ * 4. 发送心跳消息（client_id + aa_look，每10秒）
  * 5. 代理 M3U8 和 TS 文件
+ * 
+ * 资源管理（新增）：
+ * - ⏱️ 空闲超时：10分钟无请求后自动关闭 WebSocket 连接
+ * - 🔄 重连限制：最多尝试重连 5 次，避免无限重连
+ * - 🧹 自动清理：定期检查空闲状态（每2分钟）
+ * - 📊 智能重连：只在有活跃请求时才重连
  * 
  * 当前状态：
  * - ✅ 频道列表获取正常
  * - ✅ 播放地址生成正常（含 auth_key + extrakey + aalook）
  * - ✅ WebSocket 心跳支持（Node.js Runtime）
+ * - ✅ 空闲超时机制（避免资源浪费）
+ * - ✅ 重连次数限制（避免无限重连）
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -75,14 +83,19 @@ const playUrlCache = new Map<string, PlayUrlData>();
 const wsConnectionCache = new Map<string, { connected: boolean; lastHeartbeat: number }>();
 
 const CACHE_TTL = 5 * 60 * 1000; // 5分钟缓存
+const IDLE_TIMEOUT = 10 * 60 * 1000; // 10分钟无请求后断开心跳
+const MAX_RECONNECT_ATTEMPTS = 5; // 最大重连次数
 
 // 全局 WebSocket 连接（持久连接，模拟原网站行为）
 let globalWebSocket: any = null;
 let globalSocketReady = false;
 let heartbeatInterval: NodeJS.Timeout | null = null;
+let idleCheckInterval: NodeJS.Timeout | null = null;
 let currentClientId = '';
 let currentClientToken = '';
 let currentAalook = '';
+let lastRequestTime = 0; // 最后一次请求时间
+let reconnectAttempts = 0; // 重连尝试次数
 
 // WebSocket 帧编码/解码函数（参考广东实现）
 function encodeWebsocketPayload(data: string): Buffer {
@@ -138,6 +151,53 @@ function parseWebsocketFrame(buf: Buffer): Buffer | null {
   }
   
   return payload;
+}
+
+// 清理 WebSocket 连接
+function cleanupWebSocket() {
+  console.log('清理 WebSocket 连接（空闲超时或主动关闭）');
+  
+  if (globalWebSocket) {
+    try {
+      globalWebSocket.end();
+      globalWebSocket.destroy();
+    } catch (e) {
+      console.error('清理 WebSocket 连接时出错:', e);
+    }
+    globalWebSocket = null;
+  }
+  
+  globalSocketReady = false;
+  
+  if (heartbeatInterval) {
+    clearInterval(heartbeatInterval);
+    heartbeatInterval = null;
+  }
+  
+  if (idleCheckInterval) {
+    clearInterval(idleCheckInterval);
+    idleCheckInterval = null;
+  }
+  
+  reconnectAttempts = 0;
+  
+  console.log('✅ WebSocket 连接已清理');
+}
+
+// 检查是否空闲超时
+function checkIdleTimeout() {
+  if (lastRequestTime === 0) {
+    return; // 从未有请求，不检查
+  }
+  
+  const idleTime = Date.now() - lastRequestTime;
+  
+  if (idleTime > IDLE_TIMEOUT) {
+    console.log(`⏱️ 空闲超时 (${Math.floor(idleTime / 1000)}秒)，关闭 WebSocket 连接`);
+    cleanupWebSocket();
+  } else {
+    console.log(`空闲检查: 距上次请求 ${Math.floor(idleTime / 1000)}秒 (${Math.floor(IDLE_TIMEOUT / 1000)}秒后超时)`);
+  }
 }
 
 // 获取页面数据（client-id 和频道列表）
@@ -269,6 +329,13 @@ async function ensureWebSocketConnection(
     return true;
   }
   
+  // 检查是否超过最大重连次数
+  if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
+    console.log(`⚠️ 已达到最大重连次数 (${MAX_RECONNECT_ATTEMPTS})，停止重连`);
+    cleanupWebSocket();
+    return false;
+  }
+  
   // 关闭旧连接
   if (globalWebSocket) {
     console.log('关闭旧的 WebSocket 连接');
@@ -284,6 +351,12 @@ async function ensureWebSocketConnection(
   if (heartbeatInterval) {
     clearInterval(heartbeatInterval);
     heartbeatInterval = null;
+  }
+  
+  // 清除旧的空闲检查定时器
+  if (idleCheckInterval) {
+    clearInterval(idleCheckInterval);
+    idleCheckInterval = null;
   }
   
   return new Promise((resolve) => {
@@ -356,6 +429,9 @@ async function ensureWebSocketConnection(
             console.log('WebSocket 首次心跳已发送');
           });
           
+          // 重置重连计数（连接成功）
+          reconnectAttempts = 0;
+          
           // 设置定时心跳（每10秒发送一次，与原网站一致）
           heartbeatInterval = setInterval(() => {
             if (globalWebSocket && globalSocketReady) {
@@ -376,6 +452,11 @@ async function ensureWebSocketConnection(
               }
             }
           }, 10 * 1000); // 10秒间隔
+          
+          // 设置空闲检查定时器（每2分钟检查一次）
+          idleCheckInterval = setInterval(() => {
+            checkIdleTimeout();
+          }, 2 * 60 * 1000); // 2分钟检查间隔
           
           acc = Buffer.alloc(0);
           
@@ -405,16 +486,39 @@ async function ensureWebSocketConnection(
     });
     
     socket.on('close', () => {
-      console.log('Socket 已关闭，准备重连');
+      console.log('Socket 已关闭');
       globalSocketReady = false;
+      
       if (heartbeatInterval) {
         clearInterval(heartbeatInterval);
         heartbeatInterval = null;
       }
+      
+      if (idleCheckInterval) {
+        clearInterval(idleCheckInterval);
+        idleCheckInterval = null;
+      }
+      
+      // 检查是否应该重连
+      const idleTime = lastRequestTime > 0 ? Date.now() - lastRequestTime : 0;
+      
+      if (idleTime > IDLE_TIMEOUT) {
+        console.log(`⏱️ 空闲时间过长 (${Math.floor(idleTime / 1000)}秒)，不再重连`);
+        cleanupWebSocket();
+        return;
+      }
+      
+      if (reconnectAttempts >= MAX_RECONNECT_ATTEMPTS) {
+        console.log(`⚠️ 已达到最大重连次数 (${MAX_RECONNECT_ATTEMPTS})，停止重连`);
+        cleanupWebSocket();
+        return;
+      }
+      
       // 5秒后尝试重连（模拟原网站行为）
+      reconnectAttempts++;
       setTimeout(() => {
-        if (!globalSocketReady) {
-          console.log('尝试重新建立 WebSocket 连接...');
+        if (!globalSocketReady && lastRequestTime > 0) {
+          console.log(`尝试重新建立 WebSocket 连接... (第 ${reconnectAttempts}/${MAX_RECONNECT_ATTEMPTS} 次)`);
           ensureWebSocketConnection(currentClientId, currentClientToken, currentAalook).catch(console.error);
         }
       }, 5000);
@@ -641,6 +745,9 @@ export async function GET(request: NextRequest) {
   const host = getRealHost(request);
   const baseUrl = getBaseUrl(request);
   
+  // 🔥 更新最后请求时间（用于空闲检查）
+  lastRequestTime = Date.now();
+  
   // 获取页面数据
   const pageData = await getPageData();
   
@@ -648,7 +755,7 @@ export async function GET(request: NextRequest) {
     return new Response('无法获取页面数据', { status: 502 });
   }
   
-  // 返回频道列表
+  // 返回频道列表（不需要 WebSocket）
   if (id === 'list') {
     const lines = ['#EXTM3U', '#PLAYLIST:湖北TV频道列表', ''];
     

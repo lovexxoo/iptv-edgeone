@@ -260,6 +260,11 @@ export async function GET(request: NextRequest) {
   const channelId = searchParams.get('id') || 'list';
   const tsUrl = searchParams.get('ts');
 
+  // 🔥 优先处理 TS 文件请求（避免被 channelId='list' 逻辑拦截）
+  if (tsUrl) {
+    return proxyTSFile(decodeURIComponent(tsUrl));
+  }
+
   // 获取频道列表
   const channels = await getChannelList();
 
@@ -292,11 +297,6 @@ export async function GET(request: NextRequest) {
         'Cache-Control': 'public, max-age=300',
       },
     });
-  }
-
-  // 如果有 ts 参数，代理 TS 文件
-  if (tsUrl) {
-    return proxyTSFile(decodeURIComponent(tsUrl));
   }
 
   // 查找指定频道
