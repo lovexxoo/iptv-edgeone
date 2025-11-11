@@ -127,7 +127,7 @@ export default function Home() {
         <div className={styles.card}>
           <h2>📺 山东TV (26个)</h2>
           <ul className={styles.smallList}>
-            <li>山东卫视</li>
+            <li>山东卫视4K</li>
             <li>新闻频道</li>
             <li>齐鲁频道</li>
             <li>体育休闲频道</li>
@@ -385,9 +385,21 @@ export default function Home() {
         </div>
 
         <div className={styles.card}>
-          <h2>📺 重庆TV (1个)</h2>
+          <h2>📺 湖北TV (13个) 🔗全链路代理</h2>
           <ul className={styles.smallList}>
-            <li>重庆新闻</li>
+            <li>湖北卫视</li>
+            <li>湖北经视</li>
+            <li>湖北综合</li>
+            <li>湖北影视</li>
+            <li>湖北生活</li>
+            <li>湖北教育</li>
+            <li>垄上频道</li>
+            <li>湖北之声</li>
+            <li>经典音乐</li>
+            <li>城市之声</li>
+            <li>楚天交通</li>
+            <li>楚天音乐</li>
+            <li>农村广播</li>
           </ul>
         </div>
 
@@ -454,6 +466,13 @@ export default function Home() {
           <ul className={styles.smallList}>
             <li>频道列表实时同步API</li>
             <li>请访问 id=list 获取最新频道</li>
+          </ul>
+        </div>
+
+        <div className={styles.card}>
+          <h2>📺 重庆TV (1个)</h2>
+          <ul className={styles.smallList}>
+            <li>重庆新闻</li>
           </ul>
         </div>
 

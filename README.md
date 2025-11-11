@@ -100,8 +100,8 @@
 - 宿迁综合 (sq1)
 - 泗阳综合 (sqsy)
 
-### 📺 山东TV (26个)
-- 山东卫视 (sdws)
+### 📺 山东TV (26个，支持动态)
+- 山东卫视4K (1-2)
 - 新闻频道 (xwpd)
 - 齐鲁频道 (qlpd)
 - 体育休闲频道 (txyx)
@@ -268,6 +268,21 @@
 - 四川妇女儿童 (scfnet) 
 - 四川乡村 (scxc) 
 - 康巴卫视 (kbws) 
+
+### 📺 湖北TV (13个) 🔗全链路代理
+- 湖北卫视 (hbws) 📺
+- 湖北经视 (hbjs) 📺
+- 湖北综合 (hbzh) 📺
+- 湖北影视 (hbys) 📺
+- 湖北生活 (hbsh) 📺
+- 湖北教育 (hbjy) 📺
+- 垄上频道 (lspd) 📺
+- 湖北之声 (hbzs) 📻
+- 经典音乐 (jdyy) 📻
+- 城市之声 (cszs) 📻
+- 楚天交通 (ctjt) 📻
+- 楚天音乐 (ctyy) 📻
+- 农村广播 (ncgb) 📻
 
 ### 📺 山西TV (17个)
 - 山西卫视 (sxws)
@@ -466,7 +481,7 @@
 - 西藏藏语 (zy)
 - 西藏影视 (ys)
 
-### 📺 新疆TV (动态，7个)
+### 📺 新疆TV (动态，7个) 🔗 全链路代理
 
 - 新疆卫视 (xjws)
 - 维吾尔语新闻综合 (wyzh)
@@ -477,10 +492,8 @@
 - 少儿频道 (xjse)
 
 **说明：**
-- 新疆广电官方API，MD5签名认证
-- 🔗 全链路代理（M3U8 + TS文件）
 - ⚠️ **API需要特定网络环境或代理访问**（IP地域限制）
-- 代码已实现完整功能，建议在新疆地区或配置代理后使用
+- 代码已实现完整功能，代理IP不能用后需要更换
 
 ## 功能特性
 
@@ -488,8 +501,10 @@
 - ✅ M3U8播放列表代理
 - ✅ TS文件自动代理
 - ✅ XXTEA解密支持（吉林、内蒙古）
-- ✅ 动态频道列表（吉林、石家庄、安徽等）
-- ✅ 全链路代理（四川、云南、甘肃、兰州、安徽等）
+- ✅ 动态频道列表（吉林、石家庄、安徽、内蒙古、新疆等）
+- ✅ 全链路代理（四川、云南、甘肃、兰州、安徽、湖北、新疆等）
+- ✅ **WebSocket心跳**（湖北、广东 - 原生TLS Socket实现）
+- ✅ **完整Cookie管理**（湖北 - 自动提取所有认证cookies）
 - ✅ Edge Runtime运行
 - ✅ 无需服务器,直接部署到EdgeOne
 - ✅ 统一API接口设计
@@ -553,6 +568,18 @@ https://your-domain.com/api/fujian?id=fjws
 
 # 重庆新闻
 https://your-domain.com/api/chongqing?id=cqxw
+
+# 湖北省台（全链路代理 + WebSocket心跳）
+# 电视频道示例
+https://your-domain.com/api/hubei1?id=hbws       # 湖北卫视
+https://your-domain.com/api/hubei1?id=hbjs       # 湖北经视
+
+# 广播频道示例
+https://your-domain.com/api/hubei1?id=hbzs       # 湖北之声
+https://your-domain.com/api/hubei1?id=jdyy       # 经典音乐
+
+# 获取完整频道列表
+https://your-domain.com/api/hubei1?id=list
 
 # 湖北地方台（部分全链路代理，动态频道）
 # 302直连频道示例
@@ -707,7 +734,8 @@ iptv-edgeone/
 │   │   ├── hainan/       # 海南台API
 │   │   ├── hebei/        # 河北台API
 │   │   ├── henan/        # 河南台API
-│   │   ├── hubei/        # 湖北台API 部分代理 动态
+│   │   ├── hubei/        # 湖北地方台API 部分代理 动态
+│   │   ├── hubei1/       # 湖北台API 全链路代理
 │   │   ├── hunan/        # 湖南台API
 │   │   ├── jiangsu/      # 江苏台API
 │   │   ├── neimenggu/    # 内蒙古台API 动态
