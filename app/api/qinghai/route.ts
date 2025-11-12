@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getRealHost } from '../utils/url';
 
 /**
  * 青海广播电视台直播源代理
@@ -93,7 +94,7 @@ export async function GET(request: NextRequest) {
   // 返回播放列表
   if (id === 'list') {
     const protocol = request.headers.get('x-forwarded-proto') || 'https';
-    const host = request.headers.get('host') || request.headers.get('x-forwarded-host') || 'localhost:3000';
+    const host = getRealHost(request);
     const baseUrl = `${protocol}://${host}/api/qinghai`;
 
     const playlist = generatePlaylist(baseUrl);
