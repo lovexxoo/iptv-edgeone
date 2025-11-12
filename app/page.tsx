@@ -77,6 +77,36 @@ export default function Home() {
         </div>
 
         <div className={styles.card}>
+          <h2>📺 黑龙江TV (7个)</h2>
+          <ul className={styles.smallList}>
+            <li>黑龙江卫视</li>
+            <li>黑龙江都市</li>
+            <li>黑龙江影视</li>
+            <li>黑龙江文体</li>
+            <li>黑龙江农业科教</li>
+            <li>黑龙江新闻法治</li>
+            <li>黑龙江少儿</li>
+          </ul>
+        </div>
+
+        <div className={styles.card}>
+          <h2>📺 辽宁TV (11个) 🔗全链路代理</h2>
+          <ul className={styles.smallList}>
+            <li>辽宁卫视</li>
+            <li>都市频道</li>
+            <li>体育频道</li>
+            <li>生活频道</li>
+            <li>青少频道</li>
+            <li>影视剧频道</li>
+            <li>北方频道</li>
+            <li>移动频道-宜居购物</li>
+            <li>新动漫频道</li>
+            <li>家庭理财</li>
+            <li>移动电视</li>
+          </ul>
+        </div>
+
+        <div className={styles.card}>
           <h2>📺 江苏TV (50个)</h2>
           <ul className={styles.smallList}>
             <li>江苏卫视</li>
@@ -507,6 +537,16 @@ export default function Home() {
             <li>贵州文艺、贵州生活</li>
             <li>贵州生态乡村、贵州科教健康</li>
             <li>贵州移动电视</li>
+          </ul>
+        </div>
+
+        <div className={styles.card}>
+          <h2>📺 青海TV (4个)</h2>
+          <ul className={styles.smallList}>
+            <li>青海卫视</li>
+            <li>青海经视</li>
+            <li>青海都市</li>
+            <li>安多卫视</li>
           </ul>
         </div>
 

@@ -56,6 +56,28 @@
 - 文旅·公共 (hbgg)
 - 三佳购物 (hbsj)
 
+### 📺 黑龙江TV (7个)
+- 黑龙江卫视 (hljws)
+- 黑龙江都市 (hljds)
+- 黑龙江影视 (hljys)
+- 黑龙江文体 (hljwt)
+- 黑龙江农业科教 (hljnykj)
+- 黑龙江新闻法治 (hljxwfz)
+- 黑龙江少儿 (hljse)
+
+### 📺 辽宁TV (11个) 🔗全链路代理
+- 辽宁卫视 (lnws)
+- 都市频道 (dspd)
+- 体育频道 (typd)
+- 生活频道 (shpd)
+- 青少频道 (qspd)
+- 影视剧频道 (ysjpd)
+- 北方频道 (bfpd)
+- 移动频道-宜居购物 (yjgw)
+- 新动漫频道 (xdm)
+- 家庭理财 (jtlc)
+- 移动电视 (ydds)
+
 ### 📺 江苏TV (50个)
 - 江苏卫视 (jsws)
 - 江苏城市 (jscs)
@@ -475,6 +497,13 @@
 - 科教健康 (kjjk)
 - 移动数字 (ydsz)
 
+### 📺 青海TV (4个)
+
+- 青海卫视 (qhws)
+- 青海经视 (qhjs)
+- 青海都市 (qhds)
+- 安多卫视 (adws)
+
 ### 📺 西藏TV (3个)
 
 - 西藏卫视 (ws)
@@ -502,7 +531,7 @@
 - ✅ TS文件自动代理
 - ✅ XXTEA解密支持（吉林、内蒙古）
 - ✅ 动态频道列表（吉林、石家庄、安徽、内蒙古、新疆等）
-- ✅ 全链路代理（四川、云南、甘肃、兰州、安徽、湖北、新疆等）
+- ✅ 全链路代理（四川、云南、甘肃、兰州、安徽、湖北、新疆、辽宁等）
 - ✅ **WebSocket心跳**（湖北、广东 - 原生TLS Socket实现）
 - ✅ **完整Cookie管理**（湖北 - 自动提取所有认证cookies）
 - ✅ Edge Runtime运行
@@ -569,6 +598,17 @@ https://your-domain.com/api/fujian?id=fjws
 # 重庆新闻
 https://your-domain.com/api/chongqing?id=cqxw
 
+# 黑龙江卫视
+https://your-domain.com/api/heilongjiang?id=hljws
+
+# 辽宁卫视（全链路代理）
+https://your-domain.com/api/liaoning?id=lnws
+https://your-domain.com/api/liaoning?id=list  # 获取完整频道列表
+
+# 青海卫视
+https://your-domain.com/api/qinghai?id=qhws
+https://your-domain.com/api/qinghai?id=list  # 获取完整频道列表
+
 # 湖北省台（全链路代理 + WebSocket心跳）
 # 电视频道示例
 https://your-domain.com/api/hubei1?id=hbws       # 湖北卫视
@@ -617,6 +657,12 @@ https://your-domain.com/api/4k?id=btv4k
 https://your-domain.com/api/beijing?id=bjws
 #EXTINF:-1,云南卫视
 https://your-domain.com/api/yunnan?id=ynws
+#EXTINF:-1,黑龙江卫视
+https://your-domain.com/api/heilongjiang?id=hljws
+#EXTINF:-1,辽宁卫视
+https://your-domain.com/api/liaoning?id=lnws
+#EXTINF:-1,青海卫视
+https://your-domain.com/api/qinghai?id=qhws
 
 # 湖北地方台示例（302直连）
 #EXTINF:-1 group-title="湖北",宜昌综合频道
@@ -733,15 +779,18 @@ iptv-edgeone/
 │   │   ├── guizhou/      # 贵州台API
 │   │   ├── hainan/       # 海南台API
 │   │   ├── hebei/        # 河北台API
+│   │   ├── heilongjiang/ # 黑龙江台API
 │   │   ├── henan/        # 河南台API
 │   │   ├── hubei/        # 湖北地方台API 部分代理 动态
 │   │   ├── hubei1/       # 湖北台API 全链路代理
 │   │   ├── hunan/        # 湖南台API
 │   │   ├── jiangsu/      # 江苏台API
-│   │   ├── neimenggu/    # 内蒙古台API 动态
 │   │   ├── jilin/        # 吉林台API 动态
+│   │   ├── liaoning/     # 辽宁台API 全链路代理
+│   │   ├── neimenggu/    # 内蒙古台API 动态
 │   │   ├── lanzhou/      # 兰州台API 全链路代理
 │   │   ├── nanjing/      # 南京台API
+│   │   ├── qinghai/      # 青海台API
 │   │   ├── shaanxi/      # 陕西台API
 │   │   ├── shandong/     # 山东台API
 │   │   ├── shanghai/     # 上海台API
