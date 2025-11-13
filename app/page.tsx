@@ -227,7 +227,10 @@ export default function Home() {
         </div>
  
         <div className={styles.card}>
-          <h2>📺 浙江TV (38个)</h2>
+          <h2>📺 浙江TV (58个)</h2>
+          <p><strong>浙江省台 🎬 (9个):</strong> 浙江卫视、钱江频道、浙江经视、教科影视频道、新闻频道、民生休闲频道、少儿频道、之江纪录、国际频道</p>
+          <p><strong>地市台 🎬 (11个):</strong> 杭州综合、宁波一套、温州综合、湖州综合、嘉兴综合、绍兴综合、金华综合、衢州综合、舟山综合、台州综合、丽水综合</p>
+          <p><strong>地区台 (38个):</strong></p>
           <ul className={styles.smallList}>
             <li>杭州萧山综合</li>
             <li>象山新闻综合</li>
@@ -267,6 +270,19 @@ export default function Home() {
             <li>江山电视台</li>
             <li>龙游新闻综合</li>
             <li>衢江新闻综合</li>
+          </ul>
+        </div>
+
+        <div className={styles.card}>
+          <h2>📺 杭州TV (7个) 🔗</h2>
+          <ul className={styles.smallList}>
+            <li>杭州综合</li>
+            <li>西湖明珠</li>
+            <li>杭州生活</li>
+            <li>杭州影视</li>
+            <li>青少体育</li>
+            <li>杭州导视</li>
+            <li>富阳新闻综合</li>
           </ul>
         </div>
 
@@ -541,12 +557,49 @@ export default function Home() {
         </div>
 
         <div className={styles.card}>
+          <h2>📺 江西TV (20个)</h2>
+          <ul className={styles.smallList}>
+            <li>江西卫视</li>
+            <li>江西都市</li>
+            <li>江西经济生活</li>
+            <li>江西影视旅游</li>
+            <li>江西公共农业</li>
+            <li>江西少儿</li>
+            <li>江西新闻</li>
+            <li>江西陶瓷</li>
+            <li>风尚购物</li>
+            <li>抚州综合</li>
+            <li>赣州新闻综合</li>
+            <li>吉安综合</li>
+            <li>景德镇新闻综合</li>
+            <li>九江新闻综合</li>
+            <li>南昌新闻综合</li>
+            <li>萍乡新闻综合</li>
+            <li>上饶新闻综合</li>
+            <li>新余新闻综合</li>
+            <li>宜春综合</li>
+            <li>鹰潭综合</li>
+          </ul>
+        </div>
+
+        <div className={styles.card}>
           <h2>📺 青海TV (4个)</h2>
           <ul className={styles.smallList}>
             <li>青海卫视</li>
             <li>青海经视</li>
             <li>青海都市</li>
             <li>安多卫视</li>
+          </ul>
+        </div>
+
+        <div className={styles.card}>
+          <h2>📺 宁夏TV (5个) 🔗全链路代理</h2>
+          <ul className={styles.smallList}>
+            <li>宁夏卫视</li>
+            <li>宁夏公共</li>
+            <li>宁夏经济</li>
+            <li>宁夏文旅</li>
+            <li>宁夏少儿</li>
           </ul>
         </div>
 

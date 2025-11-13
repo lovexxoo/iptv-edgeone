@@ -194,7 +194,33 @@
 - 云南国际 (yngj) 
 - 云南少儿 (ynse) 
 
-### 📺 浙江TV (38个)
+### 📺 浙江TV (58个)
+
+#### 浙江省台 (9个) 🎬
+- 浙江卫视 (19)
+- 钱江频道 (20)
+- 浙江经视 (21)
+- 教科影视频道 (25)
+- 新闻频道 (23)
+- 民生休闲频道 (24)
+- 少儿频道 (28)
+- 之江纪录 (26)
+- 国际频道 (27)
+
+#### 地市台 (11个) 🎬
+- 杭州电视台综合频道 (12760)
+- 宁波电视台（一套） (12798)
+- 温州电视台新闻综合 (12799)
+- 湖州电视台新闻综合频道 (12800)
+- 嘉兴新闻综合 (12801)
+- 绍兴新闻综合频道 (12802)
+- 金华新闻综合频道 (12803)
+- 衢州新闻综合 (12804)
+- 舟山新闻综合频道 (12805)
+- 台州新闻综合频道 (12806)
+- 丽水新闻综合 (12807)
+
+#### 地区台 (38个)
 - 杭州萧山综合 (hzxs1)
 - 象山新闻综合 (xsxwzh)
 - 温州苍南新闻综合 (wzcn1)
@@ -233,6 +259,15 @@
 - 江山电视台 (jsdst)
 - 龙游新闻综合 (lyxwzh)
 - 衢江新闻综合 (xwzh5)
+
+### 📺 杭州TV (7个) 🔗全链路代理
+- 杭州综合 (hzzh)
+- 西湖明珠 (hzmz)
+- 杭州生活 (hzsh)
+- 杭州影视 (hzys)
+- 青少体育 (hzqsty)
+- 杭州导视 (hzds)
+- 富阳新闻综合 (fyxwzh)
 
 ### 📺 上海TV (8个)
 - 东方卫视4k (dfws)
@@ -497,12 +532,42 @@
 - 科教健康 (kjjk)
 - 移动数字 (ydsz)
 
+### 📺 江西TV (20个)
+- 江西卫视 (jxws)
+- 江西都市 (jxds)
+- 江西经济生活 (jxjs)
+- 江西影视旅游 (jxys)
+- 江西公共农业 (jxgg)
+- 江西少儿 (jxse)
+- 江西新闻 (jxxw)
+- 江西陶瓷 (jxtc)
+- 风尚购物 (fsgq)
+- 抚州综合 (fz1)
+- 赣州新闻综合 (gz1)
+- 吉安综合 (ja1)
+- 景德镇新闻综合 (jdz1)
+- 九江新闻综合 (jj1)
+- 南昌新闻综合 (nc1)
+- 萍乡新闻综合 (px1)
+- 上饶新闻综合 (sr1)
+- 新余新闻综合 (xy1)
+- 宜春综合 (yc1)
+- 鹰潭综合 (yt1)
+
 ### 📺 青海TV (4个)
 
 - 青海卫视 (qhws)
 - 青海经视 (qhjs)
 - 青海都市 (qhds)
 - 安多卫视 (adws)
+
+### 📺 宁夏TV (5个) 🔗全链路代理
+
+- 宁夏卫视 (56)
+- 宁夏公共 (111)
+- 宁夏经济 (61)
+- 宁夏文旅 (71)
+- 宁夏少儿 (67)
 
 ### 📺 西藏TV (3个)
 
@@ -531,7 +596,7 @@
 - ✅ TS文件自动代理
 - ✅ XXTEA解密支持（吉林、内蒙古）
 - ✅ 动态频道列表（吉林、石家庄、安徽、内蒙古、新疆等）
-- ✅ 全链路代理（四川、云南、甘肃、兰州、安徽、湖北、新疆、辽宁等）
+- ✅ 全链路代理（四川、云南、甘肃、兰州、安徽、湖北、新疆、辽宁、宁夏等）
 - ✅ **WebSocket心跳**（湖北、广东 - 原生TLS Socket实现）
 - ✅ **完整Cookie管理**（湖北 - 自动提取所有认证cookies）
 - ✅ Edge Runtime运行
@@ -605,6 +670,12 @@ https://your-domain.com/api/heilongjiang?id=hljws
 https://your-domain.com/api/liaoning?id=lnws
 https://your-domain.com/api/liaoning?id=list  # 获取完整频道列表
 
+# 江西TV
+https://your-domain.com/api/jiangxi?id=jxws      # 江西卫视
+https://your-domain.com/api/jiangxi?id=jxds      # 江西都市
+https://your-domain.com/api/jiangxi?id=nc1       # 南昌新闻综合
+https://your-domain.com/api/jiangxi?id=list      # 获取完整频道列表（20个频道）
+
 # 青海卫视
 https://your-domain.com/api/qinghai?id=qhws
 https://your-domain.com/api/qinghai?id=list  # 获取完整频道列表
@@ -661,6 +732,10 @@ https://your-domain.com/api/yunnan?id=ynws
 https://your-domain.com/api/heilongjiang?id=hljws
 #EXTINF:-1,辽宁卫视
 https://your-domain.com/api/liaoning?id=lnws
+#EXTINF:-1,江西卫视
+https://your-domain.com/api/jiangxi?id=jxws
+#EXTINF:-1,江西都市
+https://your-domain.com/api/jiangxi?id=jxds
 #EXTINF:-1,青海卫视
 https://your-domain.com/api/qinghai?id=qhws
 
@@ -776,8 +851,9 @@ iptv-edgeone/
 │   │   ├── gansu/        # 甘肃台API 全链路代理
 │   │   ├── guangdong/    # 广东台API
 │   │   ├── guangzhou/    # 广州台API
-│   │   ├── guizhou/      # 贵州台API
+│   │   ├── guizhou/      # 贵州台API 全链路代理
 │   │   ├── hainan/       # 海南台API
+│   │   ├── hangzhou/     # 杭州台API 全链路代理
 │   │   ├── hebei/        # 河北台API
 │   │   ├── heilongjiang/ # 黑龙江台API
 │   │   ├── henan/        # 河南台API
@@ -785,11 +861,13 @@ iptv-edgeone/
 │   │   ├── hubei1/       # 湖北台API 全链路代理
 │   │   ├── hunan/        # 湖南台API
 │   │   ├── jiangsu/      # 江苏台API
+│   │   ├── jiangxi/      # 江西台API
 │   │   ├── jilin/        # 吉林台API 动态
 │   │   ├── liaoning/     # 辽宁台API 全链路代理
 │   │   ├── neimenggu/    # 内蒙古台API 动态
 │   │   ├── lanzhou/      # 兰州台API 全链路代理
 │   │   ├── nanjing/      # 南京台API
+│   │   ├── ningxia/      # 宁夏台API 全链路代理
 │   │   ├── qinghai/      # 青海台API
 │   │   ├── shaanxi/      # 陕西台API
 │   │   ├── shandong/     # 山东台API
@@ -801,7 +879,8 @@ iptv-edgeone/
 │   │   ├── xinjiang/     # 新疆台API 全链路代理
 │   │   ├── xizang/       # 西藏台API
 │   │   ├── yunnan/       # 云南台API 全链路代理
-│   │   ├── zhejiang/     # 浙江台API
+│   │   ├── zhejiang/     # 浙江地区台API
+│   │   ├── zhejiang1/    # 浙江省台API (中国蓝)
 │   │   └── utils/        # 通用工具函数
 │   │       ├── crypto.ts # 加密工具（MD5/AES/XXTEA）
 │   │       └── url.ts    # URL工具（getRealHost）
