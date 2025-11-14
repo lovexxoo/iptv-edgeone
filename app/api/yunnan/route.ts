@@ -13,6 +13,16 @@ const CHANNEL_MAP: Record<string, string> = {
   ynse: 'yunnanshaoer',     // 云南少儿
 };
 
+// 频道中文名称映射
+const CHANNEL_NAME_MAP: Record<string, string> = {
+  ynws: '云南卫视',
+  ynds: '云南都市',
+  ynyl: '云南娱乐',
+  yngg: '云南公共',
+  yngj: '云南国际',
+  ynse: '云南少儿',
+};
+
 // API配置
 const API_BASE = 'https://yntv-api.yntv.cn';
 const STREAM_BASE = 'https://tvlive.yntv.cn';
@@ -139,8 +149,9 @@ export async function GET(request: NextRequest) {
     const protocol = request.url.startsWith('https') ? 'https' : 'http';
     const baseUrl = `${protocol}://${host}/api/yunnan`;
 
-    for (const [cid, name] of Object.entries(CHANNEL_MAP)) {
-      m3u8Content += `#EXTINF:-1,云南${name}\n`;
+    for (const [cid] of Object.entries(CHANNEL_MAP)) {
+      const chineseName = CHANNEL_NAME_MAP[cid] || cid;
+      m3u8Content += `#EXTINF:-1,${chineseName}\n`;
       m3u8Content += `${baseUrl}?id=${cid}\n`;
     }
 
