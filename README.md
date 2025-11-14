@@ -4,6 +4,18 @@
 
 ## 支持的电视台
 
+### 📡 CCTV (10个)
+- CCTV1 (cctv1) - 综合频道
+- CCTV2 (cctv2) - 财经频道
+- CCTV4 (cctv4) - 中文国际
+- CCTV7 (cctv7) - 国防军事
+- CCTV9 (cctv9) - 纪录频道
+- CCTV10 (cctv10) - 科教频道
+- CCTV12 (cctv12) - 社会与法
+- CCTV13 (cctv13) - 新闻频道
+- CCTV17 (cctv17) - 农业农村
+- CCTV4K (cctv4k) - 4K超高清
+
 ### 🎬 4K频道 (9个)
 - 北京卫视4K (btv4k)
 - 上海卫视4K (sh4k)
@@ -291,6 +303,19 @@
 - 十八·生活频道 (110094)
 - 文旅纪录频道 (110093)
 - 少儿频道 (110095)
+
+### 📺 广西TV (11个) 🔗全链路代理 
+- 广西卫视 (1)
+- 综艺旅游频道 (2)
+- 都市频道 (3)
+- 影视频道 (4)
+- 新闻频道 (5)
+- 国际频道 (6)
+- 乐思购频道 (7)
+- 移动数字电视频道 (8)
+- CETV-1 (9)
+- CETV-2 (10)
+- CETV-4 (11)
 
 ### 📺 广东 (20个)
 - 广东卫视 (43)
@@ -589,16 +614,44 @@
 - ⚠️ **API需要特定网络环境或代理访问**（IP地域限制）
 - 代码已实现完整功能，代理IP不能用后需要更换
 
+### 📺 全国汇总 (/all.m3u8)
+
+**一键获取全国所有频道列表！**
+
+- 自动汇总所有地区的频道列表（513+个频道）
+- 智能添加地区前缀（避免重名）
+- 自动分组：卫视优先，其他按地区
+- 自动移除"频道"后缀
+- 24小时缓存，减少服务器压力
+
+**使用方法：**
+```bash
+# 获取全国所有频道的M3U8列表
+https://your-domain.com/all.m3u8
+```
+
+**分组说明：**
+- `卫视` - 汇总所有卫视频道（49个）
+- 其他按地区分组：`央视`、`北京`、`上海`、`江苏`、`浙江` 等
+
+**智能特性：**
+1. 自动检测频道名是否包含地区名（基于全国省市县区地名库）
+2. 缺少地区名的频道自动添加前缀，如：`综艺旅游` → `广西综艺旅游`
+3. 已有地区名的频道保持原样，如：`宜昌综合` 不变
+4. 央视、4K等特殊分组不添加前缀
+
 ## 功能特性
 
 - ✅ 支持全国多地电视台频道
+- ✅ **全国频道汇总**（/all.m3u8 - 513+个频道一键获取）
 - ✅ M3U8播放列表代理
 - ✅ TS文件自动代理
 - ✅ XXTEA解密支持（吉林、内蒙古）
 - ✅ 动态频道列表（吉林、石家庄、安徽、内蒙古、新疆等）
-- ✅ 全链路代理（四川、云南、甘肃、兰州、安徽、湖北、新疆、辽宁、宁夏等）
+- ✅ 全链路代理（四川、云南、甘肃、兰州、安徽、湖北、新疆、辽宁、宁夏、广西等）
 - ✅ **WebSocket心跳**（湖北、广东 - 原生TLS Socket实现）
 - ✅ **完整Cookie管理**（湖北 - 自动提取所有认证cookies）
+- ✅ **智能地区名称检测**（基于全国省市县区地名库）
 - ✅ Edge Runtime运行
 - ✅ 无需服务器,直接部署到EdgeOne
 - ✅ 统一API接口设计
@@ -674,7 +727,12 @@ https://your-domain.com/api/liaoning?id=list  # 获取完整频道列表
 https://your-domain.com/api/jiangxi?id=jxws      # 江西卫视
 https://your-domain.com/api/jiangxi?id=jxds      # 江西都市
 https://your-domain.com/api/jiangxi?id=nc1       # 南昌新闻综合
-https://your-domain.com/api/jiangxi?id=list      # 获取完整频道列表（20个频道）
+https://your-domain.com/api/jiangxi?id=list      # 获取完整频道列表
+
+# 广西TV（全链路代理，AES-128-ECB解密）
+https://your-domain.com/api/guangxi?id=1         # 广西卫视
+https://your-domain.com/api/guangxi?id=2         # 综艺旅游频道
+https://your-domain.com/api/guangxi?id=list      # 获取完整频道列表
 
 # 青海卫视
 https://your-domain.com/api/qinghai?id=qhws
@@ -715,6 +773,9 @@ https://your-domain.com/api/sjz?id=list
 
 # 吉林频道列表（动态）
 https://your-domain.com/api/jilin?id=list
+
+# 全国所有频道汇总（513+个频道）
+https://your-domain.com/all.m3u8
 ```
 
 ### 播放器使用
@@ -756,6 +817,10 @@ https://your-domain.com/api/hubei?id=xyzh
 # 湖北地方台列表（动态，推荐）
 #EXTINF:-1,湖北地方台列表（动态）
 https://your-domain.com/api/hubei?id=list
+
+# 全国所有频道汇总（强烈推荐！）
+#EXTINF:-1,全国IPTV频道汇总
+https://your-domain.com/all.m3u8
 ```
 ```
  
@@ -842,14 +907,19 @@ docker run -d \
 ```
 iptv-edgeone/
 ├── app/
+│   ├── all.m3u8/         # 🎯 全国频道汇总 (新路由)
+│   │   ├── route.ts      # 主逻辑（汇总、解析、分组、基于host的缓存）
+│   │   └── config.ts     # 地区映射配置（两级命名：prefixName + groupName）
 │   ├── api/
 │   │   ├── 4k/           # 4K频道API
 │   │   ├── anhui/        # 安徽台API 全链路代理 动态
 │   │   ├── beijing/      # 北京台API
+│   │   ├── cctv/         # CCTV频道API
 │   │   ├── chongqing/    # 重庆台API 
 │   │   ├── fujian/       # 福建台API
 │   │   ├── gansu/        # 甘肃台API 全链路代理
 │   │   ├── guangdong/    # 广东台API
+│   │   ├── guangxi/      # 广西台API 全链路代理 AES解密
 │   │   ├── guangzhou/    # 广州台API
 │   │   ├── guizhou/      # 贵州台API 全链路代理
 │   │   ├── hainan/       # 海南台API
@@ -882,12 +952,14 @@ iptv-edgeone/
 │   │   ├── zhejiang/     # 浙江地区台API
 │   │   ├── zhejiang1/    # 浙江省台API (中国蓝)
 │   │   └── utils/        # 通用工具函数
-│   │       ├── crypto.ts # 加密工具（MD5/AES/XXTEA）
+│   │       ├── crypto.ts # 加密工具（MD5/AES-128-CBC/AES-128-ECB/XXTEA/HMAC-SHA256）
 │   │       └── url.ts    # URL工具（getRealHost）
 │   ├── styles/           # 样式文件
 │   │   └── home.module.css
 │   ├── layout.tsx        # 全局布局
 │   └── page.tsx          # 首页
+├── data/
+│   └── china-regions.json # 全国省市县区地名数据库（500+地名）
 ├── package.json
 ├── next.config.js
 ├── tsconfig.json

@@ -187,6 +187,34 @@ export async function sha256(message: string): Promise<string> {
 }
 
 /**
+ * HMAC-SHA256 (使用Web Crypto API)
+ * 用于生成签名等场景
+ * 
+ * @param message - 要签名的消息
+ * @param key - 密钥字符串
+ * @returns Promise<64位小写hex字符串>
+ */
+export async function hmacSha256(message: string, key: string): Promise<string> {
+  const encoder = new TextEncoder();
+  const keyData = encoder.encode(key);
+  const messageData = encoder.encode(message);
+
+  // 导入密钥
+  const cryptoKey = await crypto.subtle.importKey(
+    'raw',
+    keyData,
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign']
+  );
+
+  // 生成签名
+  const signature = await crypto.subtle.sign('HMAC', cryptoKey, messageData);
+  const hashArray = Array.from(new Uint8Array(signature));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+/**
  * AES-256-CBC解密 (使用Web Crypto API)
  * 用于山东TV API响应解密
  * 
@@ -258,6 +286,78 @@ export async function aesDecrypt(base64Data: string, keyHex: string, ivHex: stri
   }
   
   // 如果padding无效,返回完整数据
+  return new TextDecoder().decode(bytes);
+}
+
+/**
+ * AES-128-CBC解密 (使用Web Crypto API)
+ * 用于CCTV等需要128位密钥的CBC解密
+ * 
+ * @param base64Data - Base64编码的加密数据
+ * @param key - 16字节密钥字符串或Uint8Array
+ * @param iv - 16字节IV字符串或Uint8Array
+ * @returns Promise<解密后的字符串>
+ */
+export async function aes128CbcDecrypt(
+  base64Data: string, 
+  key: string | Uint8Array, 
+  iv: string | Uint8Array
+): Promise<string> {
+  // Base64解码
+  function base64ToBytes(base64: string): Uint8Array {
+    const binaryString = atob(base64);
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    return bytes;
+  }
+
+  // 字符串转Uint8Array
+  function strToBytes(str: string): Uint8Array {
+    return new TextEncoder().encode(str);
+  }
+
+  const keyBytes = typeof key === 'string' ? strToBytes(key) : key;
+  const ivBytes = typeof iv === 'string' ? strToBytes(iv) : iv;
+  const encryptedBytes = base64ToBytes(base64Data);
+
+  // 导入密钥
+  const cryptoKey = await crypto.subtle.importKey(
+    'raw',
+    keyBytes.slice(0),
+    { name: 'AES-CBC', length: 128 },
+    false,
+    ['decrypt']
+  );
+
+  // 解密
+  const decrypted = await crypto.subtle.decrypt(
+    { name: 'AES-CBC', iv: ivBytes.slice(0) },
+    cryptoKey,
+    encryptedBytes.slice(0)
+  );
+
+  // 转换为字符串 (移除PKCS7 padding)
+  const bytes = new Uint8Array(decrypted);
+  const paddingLength = bytes[bytes.length - 1];
+  
+  // 验证并移除PKCS7 padding
+  if (paddingLength > 0 && paddingLength <= 16) {
+    let validPadding = true;
+    for (let i = 1; i <= paddingLength; i++) {
+      if (bytes[bytes.length - i] !== paddingLength) {
+        validPadding = false;
+        break;
+      }
+    }
+    
+    if (validPadding) {
+      const textBytes = bytes.slice(0, bytes.length - paddingLength);
+      return new TextDecoder().decode(textBytes);
+    }
+  }
+  
   return new TextDecoder().decode(bytes);
 }
 
@@ -378,4 +478,46 @@ export function xxteaDecrypt(data: string, key: string): string {
   // 转换回字符串
   const decryptedBytes = long2str(v, true);
   return new TextDecoder().decode(decryptedBytes);
+}
+
+/**
+ * AES-128-ECB解密 (用于广西TV TS流解密)
+ * 使用aes-js实现，性能比crypto-js快7.5倍
+ * ECB模式不需要IV，直接对每个16字节块进行解密
+ * 
+ * @param data - 要解密的数据 (Uint8Array, 必须是16字节)
+ * @param key - 16字节密钥 (Uint8Array)
+ * @returns 解密后的Uint8Array
+ * 
+ * @example
+ * const key = hexToBytes('aa390855e94889d26ccf2c5a0c342e73');
+ * const encrypted = new Uint8Array([...]); // 16字节块
+ * const decrypted = aesEcbDecrypt(encrypted, key);
+ */
+export function aesEcbDecrypt(data: Uint8Array, key: Uint8Array): Uint8Array {
+  // 使用aes-js（性能比crypto-js快7.5倍）
+  const aesjs = require('aes-js');
+  
+  // 创建AES-ECB解密器（无padding）
+  const aesEcb = new aesjs.ModeOfOperation.ecb(key);
+  
+  // 解密（aes-js直接返回Uint8Array）
+  return aesEcb.decrypt(data);
+}
+
+/**
+ * Hex字符串转字节数组
+ * 
+ * @param hex - 十六进制字符串
+ * @returns Uint8Array
+ * 
+ * @example
+ * hexToBytes('aa390855') // Uint8Array [170, 57, 8, 85]
+ */
+export function hexToBytes(hex: string): Uint8Array {
+  const bytes = new Uint8Array(hex.length / 2);
+  for (let i = 0; i < hex.length; i += 2) {
+    bytes[i / 2] = parseInt(hex.substr(i, 2), 16);
+  }
+  return bytes;
 }

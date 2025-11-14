@@ -9,6 +9,22 @@ export default function Home() {
       <div className={styles.grid}>
         
         <div className={styles.card}>
+          <h2>📡 CCTV (10个)</h2>
+          <ul className={styles.smallList}>
+            <li>CCTV1 - 综合频道</li>
+            <li>CCTV2 - 财经频道</li>
+            <li>CCTV4 - 中文国际</li>
+            <li>CCTV7 - 国防军事</li>
+            <li>CCTV9 - 纪录频道</li>
+            <li>CCTV10 - 科教频道</li>
+            <li>CCTV12 - 社会与法</li>
+            <li>CCTV13 - 新闻频道</li>
+            <li>CCTV17 - 农业农村</li>
+            <li>CCTV4K - 4K超高清</li>
+          </ul>
+        </div>
+
+        <div className={styles.card}>
           <h2>🎬 4K超高清 (9个)</h2>
           <ul className={styles.smallList}>
             <li>北京卫视4K</li>
@@ -318,6 +334,23 @@ export default function Home() {
             <li>十八·生活频道</li>
             <li>文旅纪录频道</li>
             <li>少儿频道</li>
+          </ul>
+        </div>
+
+        <div className={styles.card}>
+          <h2>📺 广西TV (11个) 🔗全链路代理</h2>
+          <ul className={styles.smallList}>
+            <li>广西卫视</li>
+            <li>综艺旅游频道</li>
+            <li>都市频道</li>
+            <li>影视频道</li>
+            <li>新闻频道</li>
+            <li>国际频道</li>
+            <li>乐思购频道</li>
+            <li>移动数字电视频道</li>
+            <li>CETV-1</li>
+            <li>CETV-2</li>
+            <li>CETV-4</li>
           </ul>
         </div>
 
@@ -674,16 +707,20 @@ export default function Home() {
           <li><strong>直接播放</strong>: 复制API链接到VLC/PotPlayer等播放器</li>
           <li><strong>频道列表</strong>: 添加 <code>?id=list</code> 参数获取M3U8格式频道列表</li>
           <li><strong>多种ID格式</strong>: 吉林台支持友好ID(jlws)、数字ID(2)、ch前缀(ch2)</li>
+          <li><strong>清晰度选择</strong>: CCTV频道支持 <code>&q=lg</code>(蓝光)/<code>cq</code>(超清)/<code>gq</code>(高清)</li>
           <li><strong>生成播放列表</strong>:
             <pre className={styles.pre}>
-{`# 获取4K频道列表
+{`# 获取CCTV频道列表
+curl https://your-domain.com/api/cctv?id=list > cctv.m3u8
+
+# 获取4K频道列表
 curl https://your-domain.com/api/4k?id=list > 4k.m3u8
 
 # 获取吉林台列表（动态）
 curl https://your-domain.com/api/jilin?id=list > jilin.m3u8
 
-# 播放
-vlc jilin.m3u8`}
+# 播放CCTV1蓝光
+vlc "https://your-domain.com/api/cctv?id=cctv1&q=lg"`}
             </pre>
           </li>
         </ol>
