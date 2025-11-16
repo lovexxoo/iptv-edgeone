@@ -23,11 +23,13 @@ export function getRealHost(request: Request): string {
     return originalHost;
   }
   
-  // 3. 从 URL 中提取（如果是公网域名）
+  // 3. 从 URL 中提取
+  let urlHost: string | null = null;
   try {
     const url = new URL(request.url);
-    if (!isInternalHost(url.host)) {
-      return url.host;
+    urlHost = url.host;
+    if (!isInternalHost(urlHost)) {
+      return urlHost;
     }
   } catch {}
   
@@ -43,18 +45,39 @@ export function getRealHost(request: Request): string {
     } catch {}
   }
   
-  // 5. 从 Host header 获取（可能被EdgeOne修改）
+  // 5. 从 Host header 获取
   const hostHeader = request.headers.get('host');
   if (hostHeader && !isInternalHost(hostHeader)) {
     return hostHeader;
   }
   
-  // 6. 检查是否为开发环境
+  // 6. 如果是本地开发/测试环境（Docker或npm dev），返回实际请求的host
+  // 这样在Docker容器内通过127.0.0.1:3000访问时能正确返回127.0.0.1:3000
+  if (urlHost && (urlHost.includes('localhost') || urlHost.includes('127.0.0.1'))) {
+    return urlHost;
+  }
+  
+  if (hostHeader && (hostHeader.includes('localhost') || hostHeader.includes('127.0.0.1'))) {
+    return hostHeader;
+  }
+  
+  // 7. 检查是否为开发环境
   if (process.env.NODE_ENV === 'development') {
     return 'localhost:3000';
   }
   
-  // 7. 默认返回配置的域名（EdgeOne环境下的兜底方案）
+  // 8. 默认返回配置的域名（EdgeOne环境下的兜底方案）
+  // 如果走到这里说明所有检测方法都失败了，记录警告
+  if (!process.env.PUBLIC_DOMAIN) {
+    console.warn('[getRealHost] Unable to determine real host from headers, using fallback domain');
+    console.warn('[getRealHost] Request URL:', request.url);
+    console.warn('[getRealHost] Headers:', {
+      'x-forwarded-host': request.headers.get('x-forwarded-host'),
+      'x-original-host': request.headers.get('x-original-host'),
+      'host': request.headers.get('host'),
+      'referer': request.headers.get('referer'),
+    });
+  }
   return process.env.PUBLIC_DOMAIN || 'iptv.tmd2.com';
 }
 
