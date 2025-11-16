@@ -3,22 +3,25 @@
  * EdgeOne Pages内部使用localhost:9000或pages-scf域名，需要从headers中获取真实域名
  */
 export function getRealHost(request: Request): string {
-  // 内部域名关键词（需要过滤的）
-  const internalKeywords = ['localhost', 'pages-scf', 'qcloudteo.com', '127.0.0.1'];
+  // 内部域名关键词（EdgeOne/CloudFlare等CDN的内部域名）
+  const internalKeywords = ['pages-scf', 'qcloudteo.com'];
   
   const isInternalHost = (host: string | null): boolean => {
     if (!host) return true;
     return internalKeywords.some(keyword => host.includes(keyword));
   };
   
-  // 1. 从 X-Forwarded-Host 获取（EdgeOne代理时最可靠）
+  // 检查是否存在代理 headers（说明在生产环境/CDN后面）
   const forwardedHost = request.headers.get('x-forwarded-host');
+  const originalHost = request.headers.get('x-original-host');
+  const hasCDNHeaders = forwardedHost || originalHost;
+  
+  // 1. 从 X-Forwarded-Host 获取（EdgeOne/CDN代理时最可靠）
   if (forwardedHost && !isInternalHost(forwardedHost)) {
     return forwardedHost;
   }
   
   // 2. 从 X-Original-Host 获取
-  const originalHost = request.headers.get('x-original-host');
   if (originalHost && !isInternalHost(originalHost)) {
     return originalHost;
   }
@@ -51,14 +54,13 @@ export function getRealHost(request: Request): string {
     return hostHeader;
   }
   
-  // 6. 如果是本地开发/测试环境（Docker或npm dev），返回实际请求的host
-  // 这样在Docker容器内通过127.0.0.1:3000访问时能正确返回127.0.0.1:3000
-  if (urlHost && (urlHost.includes('localhost') || urlHost.includes('127.0.0.1'))) {
-    return urlHost;
-  }
-  
-  if (hostHeader && (hostHeader.includes('localhost') || hostHeader.includes('127.0.0.1'))) {
-    return hostHeader;
+  // 6. 本地开发环境判断
+  // 如果没有 CDN headers，说明是直连（本地/Docker），返回实际请求的 host
+  // 如果有 CDN headers 但是 host 是 localhost，说明是 EdgeOne 内部转发，不应该返回
+  if (!hasCDNHeaders) {
+    // 没有 CDN headers，是真正的本地环境，直接返回 urlHost 或 hostHeader
+    if (urlHost) return urlHost;
+    if (hostHeader) return hostHeader;
   }
   
   // 7. 检查是否为开发环境
@@ -72,9 +74,9 @@ export function getRealHost(request: Request): string {
     console.warn('[getRealHost] Unable to determine real host from headers, using fallback domain');
     console.warn('[getRealHost] Request URL:', request.url);
     console.warn('[getRealHost] Headers:', {
-      'x-forwarded-host': request.headers.get('x-forwarded-host'),
-      'x-original-host': request.headers.get('x-original-host'),
-      'host': request.headers.get('host'),
+      'x-forwarded-host': forwardedHost,
+      'x-original-host': originalHost,
+      'host': hostHeader,
       'referer': request.headers.get('referer'),
     });
   }
