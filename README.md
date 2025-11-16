@@ -781,7 +781,6 @@ https://your-domain.com/all.m3u8
 ### 播放器使用
 
 ```m3u
-```m3u
 #EXTM3U
 #EXTINF:-1,北京卫视4K
 https://your-domain.com/api/4k?id=btv4k
@@ -821,7 +820,6 @@ https://your-domain.com/api/hubei?id=list
 # 全国所有频道汇总（强烈推荐！）
 #EXTINF:-1,全国IPTV频道汇总
 https://your-domain.com/all.m3u8
-```
 ```
  
 ## 本地开发
@@ -871,6 +869,25 @@ docker run -d \
   iptv-edgeone
 ```
 
+或者用如下Docker Compose：
+```yml
+services:
+  iptv-edgeone:
+    image: ghcr.io/vitter/iptv-edgeone:latest
+    container_name: iptv-edgeone
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    networks:
+      - iptv-network
+networks:
+  iptv-network:
+    driver: bridge
+```
+
 容器启动后同样访问: http://localhost:3000
 
 参见 `DEPLOY.md` 以获取 EdgeOne 兼容性、环境变量和调试提示。
@@ -878,13 +895,7 @@ docker run -d \
 ## 部署到EdgeOne Pages
 
 1. **准备仓库**
-   ```bash
-   git init
-   git add .
-   git commit -m "Initial commit"
-   git remote add origin <your-repo-url>
-   git push -u origin main
-   ```
+   Fork 本项目
 
 2. **EdgeOne Pages配置**
    - 登录腾讯云EdgeOne控制台
