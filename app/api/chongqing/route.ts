@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getRealHost } from '../utils/url';
 
 export const runtime = 'edge';
 
@@ -16,8 +17,8 @@ export async function GET(request: NextRequest) {
 
   // ===== ?id=list 返回频道列表 =====
   if (id === 'list') {
-    const protocol = request.headers.get('x-forwarded-proto') || 'https';
-    const host = request.headers.get('x-forwarded-host') || request.headers.get('host') || 'localhost';
+    const host = getRealHost(request);
+    const protocol = request.url.startsWith('https') ? 'https' : 'http';
     const selfUrl = `${protocol}://${host}${urlObj.pathname}`;
     
     let m3u = '#EXTM3U\n';
