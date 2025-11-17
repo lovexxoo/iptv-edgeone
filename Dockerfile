@@ -1,22 +1,23 @@
-FROM node:20-alpine
+FROM node:20-alpine AS builder
 
-# 设置工作目录
 WORKDIR /app
 
-# 复制package文件
-COPY package*.json ./
+COPY package*.json package-lock.json* ./
+RUN npm ci --prefer-offline --no-audit --progress=false
 
-# 安装依赖
-RUN npm install
-
-# 复制项目文件
 COPY . .
-
-# 构建Next.js应用
 RUN npm run build
 
-# 暴露端口
+FROM node:20-alpine AS runner
+WORKDIR /app
+
+RUN addgroup -g 1001 -S nodejs && adduser -S nextjs -u 1001
+
+# 复制 standalone 输出
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+USER nextjs
 EXPOSE 3000
 
-# 启动应用
-CMD ["npm", "start"]
+CMD ["node", "server.js"]

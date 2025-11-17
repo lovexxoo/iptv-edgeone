@@ -38,6 +38,25 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v4
 
+      # 新增步骤：临时修改 next.config.js 用于 Docker 构建
+      - name: Modify next.config.js for Docker build
+        run: |
+          # 备份原始配置文件
+          cp next.config.js next.config.js.backup
+          
+          # 创建适用于 Docker 的配置文件
+          cat > next.config.js << 'EOF'
+          /** @type {import('next').NextConfig} */
+          const nextConfig = {
+            output: 'standalone',
+          }
+          
+          module.exports = nextConfig
+          EOF
+          
+          echo "Modified next.config.js for Docker build:"
+          cat next.config.js
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -70,6 +89,15 @@ jobs:
           outputs: type=image,name=ghcr.io/vitter/iptv-edgeone,name-canonical=true,push=true
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      # 可选：恢复原始配置文件
+      - name: Restore original next.config.js
+        if: always()
+        run: |
+          if [ -f next.config.js.backup ]; then
+            mv next.config.js.backup next.config.js
+            echo "Restored original next.config.js"
+          fi
 
       - name: Export digest
         run: |
