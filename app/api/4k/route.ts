@@ -17,7 +17,7 @@ const API_URL2 = 'https://api.chinaaudiovisual.cn/column/getColumnList';
 // 频道映射表
 const CHANNEL_MAP: { [key: string]: number } = {
   'btv4k': 91417,  // 北京卫视4K
-  'sh4k': 96050,   // 上海卫视4K
+  'sh4k': 96050,   // 东方卫视4K
   'js4k': 95925,   // 江苏卫视4K
   'zj4k': 96039,   // 浙江卫视4K
   'sd4k': 95975,   // 山东卫视4K
@@ -30,7 +30,7 @@ const CHANNEL_MAP: { [key: string]: number } = {
 // 频道名称映射
 const CHANNEL_NAMES: { [key: string]: string } = {
   'btv4k': '北京卫视4K',
-  'sh4k': '上海卫视4K',
+  'sh4k': '东方卫视4K',
   'js4k': '江苏卫视4K',
   'zj4k': '浙江卫视4K',
   'sd4k': '山东卫视4K',

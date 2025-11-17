@@ -106,20 +106,30 @@ export default function Home() {
         </div>
 
         <div className={styles.card}>
-          <h2>📺 辽宁TV (11个) 🔗全链路代理</h2>
-          <ul className={styles.smallList}>
-            <li>辽宁卫视</li>
-            <li>都市频道</li>
-            <li>体育频道</li>
-            <li>生活频道</li>
-            <li>青少频道</li>
-            <li>影视剧频道</li>
-            <li>北方频道</li>
-            <li>移动频道-宜居购物</li>
-            <li>新动漫频道</li>
-            <li>家庭理财</li>
-            <li>移动电视</li>
-          </ul>
+          <h2>📺 辽宁TV (41个) 🔗全链路代理</h2>
+            <ul className={styles.smallList}>
+              <li>辽宁卫视</li>
+              <li>辽宁都市</li>
+              <li>辽宁影视</li>
+              <li>辽宁教育青少</li>
+              <li>辽宁生活</li>
+              <li>辽宁体育</li>
+              <li>辽宁北方</li>
+              <li>辽宁宜佳购物</li>
+              <li>辽宁新动漫</li>
+              <li>辽宁家庭理财</li>
+              <li>辽宁移动电视</li>
+              <li>抚顺综合/教育、清原综合</li>
+              <li>调兵山、昌图、西丰、开原</li>
+              <li>法库新闻综合、新民综合</li>
+              <li>朝阳县、北票新闻综合、喀左综合</li>
+              <li>阜蒙汉语综合、彰武</li>
+              <li>兴城综合、绥中综合</li>
+              <li>瓦房店新闻、庄河综合</li>
+              <li>东港新东港、宽甸综合</li>
+              <li>辽阳新闻、辽阳社会生活</li>
+              <li>营口新闻、营口辽河文化</li>
+            </ul>
         </div>
 
         <div className={styles.card}>
