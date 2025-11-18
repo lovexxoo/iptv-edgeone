@@ -8,7 +8,7 @@ RUN npm ci --prefer-offline --no-audit --progress=false
 COPY . .
 RUN npm run build
 
-FROM node:20-alpine AS runner
+FROM node:18-alpine AS runner
 WORKDIR /app
 
 RUN addgroup -g 1001 -S nodejs && adduser -S nextjs -u 1001
